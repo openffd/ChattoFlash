@@ -194,8 +194,9 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
 
 public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
 
-    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0xE6ECF2)
-    private static let defaultOutgoingColor = UIColor.bma_color(rgb: 0x303E45)
+//    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0xE6ECF2)
+    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0x607D8B)
+    private static let defaultOutgoingColor = UIColor.bma_color(rgb: 0x607D8B)
 
     static func createDefaultColors() -> Colors {
         return Colors(incoming: self.defaultIncomingColor, outgoing: self.defaultOutgoingColor)
@@ -221,7 +222,8 @@ public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
     }
 
     static func createDefaultDateTextStyle() -> DateTextStyle {
-        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0x9aa3ab))
+//        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0x9aa3ab))
+        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0xBBBBBB))
     }
 
     static func createDefaultLayoutConstants() -> BaseMessageCollectionViewCellLayoutConstants {

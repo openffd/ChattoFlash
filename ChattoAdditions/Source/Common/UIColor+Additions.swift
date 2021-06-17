@@ -26,7 +26,21 @@ import UIKit
 
 public extension UIColor {
     static func bma_color(rgb: Int) -> UIColor {
-        return UIColor(red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0, green: CGFloat((rgb & 0xFF00) >> 8) / 255.0, blue: CGFloat((rgb & 0xFF)) / 255.0, alpha: 1.0)
+        if #available(iOS 10.0, *) {
+            return UIColor(
+                displayP3Red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
+                green: CGFloat((rgb & 0xFF00) >> 8) / 255.0,
+                blue: CGFloat((rgb & 0xFF)) / 255.0,
+                alpha: 1
+            )
+        } else {
+            return UIColor(
+                red: CGFloat((rgb & 0xFF0000) >> 16) / 255.0,
+                green: CGFloat((rgb & 0xFF00) >> 8) / 255.0,
+                blue: CGFloat((rgb & 0xFF)) / 255.0,
+                alpha: 1
+            )
+        }
     }
 
     func bma_blendWithColor(_ color: UIColor) -> UIColor {
@@ -40,6 +54,10 @@ public extension UIColor {
         let r = r1 * beta + r2 * alpha
         let g = g1 * beta + g2 * alpha
         let b = b1 * beta + b2 * alpha
-        return UIColor(red: r, green: g, blue: b, alpha: 1)
+        if #available(iOS 10.0, *) {
+            return UIColor(displayP3Red: r, green: g, blue: b, alpha: 1)
+        } else {
+            return UIColor(red: r, green: g, blue: b, alpha: 1)
+        }
     }
 }

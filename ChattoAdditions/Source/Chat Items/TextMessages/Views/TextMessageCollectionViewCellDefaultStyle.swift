@@ -160,8 +160,9 @@ public extension TextMessageCollectionViewCellDefaultStyle { // Default values
 
     static func createDefaultTextStyle() -> TextStyle {
         return TextStyle(
-            font: UIFont.systemFont(ofSize: 16),
-            incomingColor: UIColor.black,
+//            font: UIFont.systemFont(ofSize: 16),
+            font: UIFont(name: "Montserrat-Regular", size: 15)!,
+            incomingColor: UIColor.white,
             outgoingColor: UIColor.white,
             incomingInsets: UIEdgeInsets(top: 10, left: 19, bottom: 10, right: 15),
             outgoingInsets: UIEdgeInsets(top: 10, left: 15, bottom: 10, right: 19)
