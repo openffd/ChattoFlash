@@ -176,15 +176,17 @@ public class MessageViewModelDefaultBuilder {
         let formatter = DateFormatter()
         formatter.locale = Locale.current
         formatter.dateStyle = .none
-        formatter.timeStyle = .short
+        formatter.timeStyle = .medium
         return formatter
     }()
 
     public func createMessageViewModel(_ message: MessageModelProtocol) -> MessageViewModelProtocol {
         // Override to use default avatarImage
-        return MessageViewModel(dateFormatter: MessageViewModelDefaultBuilder.dateFormatter,
-                                messageModel: message,
-                                avatarImage: nil,
-                                decorationAttributes: BaseMessageDecorationAttributes())
+        return MessageViewModel(
+            dateFormatter: MessageViewModelDefaultBuilder.dateFormatter,
+            messageModel: message,
+            avatarImage: nil,
+            decorationAttributes: BaseMessageDecorationAttributes()
+        )
     }
 }

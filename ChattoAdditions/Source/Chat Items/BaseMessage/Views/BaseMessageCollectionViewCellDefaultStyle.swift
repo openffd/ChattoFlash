@@ -195,7 +195,7 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
 public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
 
 //    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0xE6ECF2)
-    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0x607D8B)
+    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0x4D636F)
     private static let defaultOutgoingColor = UIColor.bma_color(rgb: 0x607D8B)
 
     static func createDefaultColors() -> Colors {
@@ -223,14 +223,17 @@ public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
 
     static func createDefaultDateTextStyle() -> DateTextStyle {
 //        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0x9aa3ab))
-        return DateTextStyle(font: UIFont(name: "Montserrat-Regular", size: 12)!, color: UIColor.bma_color(rgb: 0xFFFFFF))
+        DateTextStyle(font: UIFont(name: "Montserrat-Regular", size: 11)!, color: UIColor.bma_color(rgb: 0xBBBBBB))
     }
 
     static func createDefaultLayoutConstants() -> BaseMessageCollectionViewCellLayoutConstants {
-        return BaseMessageCollectionViewCellLayoutConstants(horizontalMargin: 11,
-                                                            horizontalInterspacing: 4,
-                                                            horizontalTimestampMargin: 11,
-                                                            maxContainerWidthPercentageForBubbleView: 0.68)
+        let constants = BaseMessageCollectionViewCellLayoutConstants(
+            horizontalMargin: 11,
+            horizontalInterspacing: 4,
+            horizontalTimestampMargin: 11,
+            maxContainerWidthPercentageForBubbleView: 0.68
+        )
+        return constants
     }
 
     private static let selectionIndicatorIconSelected = UIImage(named: "base-message-checked-icon", in: Bundle.resources, compatibleWith: nil)!.bma_tintWithColor(BaseMessageCollectionViewCellDefaultStyle.defaultOutgoingColor)

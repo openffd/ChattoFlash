@@ -209,11 +209,23 @@ open class BaseChatViewController: UIViewController,
 
     var inputContainerBottomConstraint: NSLayoutConstraint!
     
+    private var mainBackgroundColor: UIColor {
+        let backgroundColor: UIColor
+        if #available(iOS 10.0, *) {
+            backgroundColor = UIColor(displayP3Red: 48.0 / 255, green: 62.0 / 255, blue: 69.0 / 255, alpha: 1)
+        } else {
+            backgroundColor = UIColor(red: 48.0 / 255, green: 62.0 / 255, blue: 69.0 / 255, alpha: 1)
+        }
+        return backgroundColor
+    }
+    
     private func addInputBarContainer() {
         self.inputBarContainer = UIView(frame: CGRect.zero)
         self.inputBarContainer.autoresizingMask = UIView.AutoresizingMask()
         self.inputBarContainer.translatesAutoresizingMaskIntoConstraints = false
-        self.inputBarContainer.backgroundColor = .clear
+        
+        self.inputBarContainer.backgroundColor = mainBackgroundColor
+        
         self.view.addSubview(self.inputBarContainer)
         NSLayoutConstraint.activate([
             self.inputBarContainer.topAnchor.constraint(greaterThanOrEqualTo: topLayoutGuide.bottomAnchor)
@@ -251,13 +263,7 @@ open class BaseChatViewController: UIViewController,
         inputContentContainer.autoresizingMask = UIView.AutoresizingMask()
         inputContentContainer.translatesAutoresizingMaskIntoConstraints = false
         
-//        let backgroundColor: UIColor
-//        if #available(iOS 10.0, *) {
-//            backgroundColor = UIColor(displayP3Red: 58.0 / 255, green: 75.0 / 255, blue: 83.0 / 255, alpha: 1)
-//        } else {
-//            backgroundColor = UIColor(red: 58.0 / 255, green: 75.0 / 255, blue: 83.0 / 255, alpha: 1)
-//        }
-        inputContentContainer.backgroundColor = .clear //backgroundColor
+        inputContentContainer.backgroundColor = mainBackgroundColor
         
         view.addSubview(inputContentContainer)
         NSLayoutConstraint.activate([

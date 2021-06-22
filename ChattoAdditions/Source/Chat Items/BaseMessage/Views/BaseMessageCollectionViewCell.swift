@@ -36,7 +36,9 @@ public struct ReplyIndicatorStyle {
         self.maxOffsetToReplyIndicator = maxOffsetToReplyIndicator
     }
 
-    var maxOffset: CGFloat { self.maxOffsetToReplyIndicator + size.width }
+    var maxOffset: CGFloat {
+        maxOffsetToReplyIndicator + size.width
+    }
 }
 
 public protocol BaseMessageCollectionViewCellStyleProtocol {
@@ -88,7 +90,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     BubbleViewType: MaximumLayoutWidthSpecificable,
     BubbleViewType: BackgroundSizingQueryable {
 
-    public var animationDuration: CFTimeInterval = 0.33
+    public var animationDuration: CFTimeInterval = 0.3
     open var viewContext: ViewContext = .normal
 
     public private(set) var isUpdating: Bool = false
@@ -100,9 +102,9 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             self.updateViews()
         }
         if animated {
-            UIView.animate(withDuration: self.animationDuration, animations: updateAndRefreshViews, completion: { (_) -> Void in
+            UIView.animate(withDuration: animationDuration, animations: updateAndRefreshViews) { _ in
                 completion?()
-            })
+            }
         } else {
             updateAndRefreshViews()
         }
@@ -369,9 +371,11 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
 
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
         if self.useAutolayoutForBubbleView {
-            return contentView.systemLayoutSizeFitting(.init(width: size.width, height: 0),
-                                                       withHorizontalFittingPriority: .required,
-                                                       verticalFittingPriority: .defaultLow)
+            return contentView.systemLayoutSizeFitting(
+                .init(width: size.width, height: 0),
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .defaultLow
+            )
         } else {
             return self.calculateLayout(availableWidth: size.width).size
         }
@@ -431,12 +435,12 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
             }
         } else {
             if animated {
-                UIView.animate(withDuration: self.animationDuration, animations: { () -> Void in
+                UIView.animate(withDuration: self.animationDuration, animations: {
                     self.layoutIfNeeded()
-                    }, completion: { (_) -> Void in
-                        if offset == 0 {
-                            self.removeAccessoryView()
-                        }
+                }, completion: { _ in
+                    if offset == 0 {
+                        self.removeAccessoryView()
+                    }
                 })
             }
         }
@@ -487,8 +491,7 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     private var selectionTapGestureRecognizer: UITapGestureRecognizer?
     public var onSelection: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
 
-    @objc
-    private func handleSelectionTap(_ gestureRecognizer: UITapGestureRecognizer) {
+    @objc private func handleSelectionTap(_ gestureRecognizer: UITapGestureRecognizer) {
         self.onSelection?(self)
     }
 
@@ -509,33 +512,28 @@ open class BaseMessageCollectionViewCell<BubbleViewType>: UICollectionViewCell, 
     // MARK: User interaction
 
     public var onFailedButtonTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
-    @objc
-    func failedButtonTapped() {
+    @objc func failedButtonTapped() {
         self.onFailedButtonTapped?(self)
     }
 
     public var onAvatarTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
-    @objc
-    func avatarTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
+    @objc func avatarTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         self.onAvatarTapped?(self)
     }
 
     public var onBubbleTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
-    @objc
-    func bubbleTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
+    @objc func bubbleTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         self.onBubbleTapped?(self)
     }
 
     public var onBubbleDoubleTapped: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
-    @objc
-    func bubbleDoubleTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
+    @objc func bubbleDoubleTapped(_ tapGestureRecognizer: UITapGestureRecognizer) {
         self.onBubbleDoubleTapped?(self)
     }
 
     public var onBubbleLongPressBegan: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
     public var onBubbleLongPressEnded: ((_ cell: BaseMessageCollectionViewCell) -> Void)?
-    @objc
-    private func bubbleLongPressed(_ longPressGestureRecognizer: UILongPressGestureRecognizer) {
+    @objc private func bubbleLongPressed(_ longPressGestureRecognizer: UILongPressGestureRecognizer) {
         switch longPressGestureRecognizer.state {
         case .began:
             self.onBubbleLongPressBegan?(self)
