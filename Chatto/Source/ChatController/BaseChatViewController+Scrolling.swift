@@ -25,8 +25,7 @@
 import UIKit
 
 public enum CellVerticalEdge {
-    case top
-    case bottom
+    case top, bottom
 }
 
 extension CGFloat {
@@ -36,9 +35,14 @@ extension CGFloat {
 extension BaseChatViewController {
 
     private static var nextDidEndScrollingAnimationHandlersKey: Int = 0
+    
     private var nextDidEndScrollingAnimationHandlers: [() -> Void] {
-        get { objc_getAssociatedObject(self, &Self.nextDidEndScrollingAnimationHandlersKey) as? [() -> Void] ?? [] }
-        set { objc_setAssociatedObject(self, &Self.nextDidEndScrollingAnimationHandlersKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+        get {
+            objc_getAssociatedObject(self, &Self.nextDidEndScrollingAnimationHandlersKey) as? [() -> Void] ?? []
+        }
+        set {
+            objc_setAssociatedObject(self, &Self.nextDidEndScrollingAnimationHandlersKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
 
     public func isScrolledAtBottom() -> Bool {
@@ -74,24 +78,24 @@ extension BaseChatViewController {
         guard let attributes = collectionView.collectionViewLayout.layoutAttributesForItem(at: indexPath) else { return false }
         let visibleRect = self.visibleRect()
         let intersection = visibleRect.intersection(attributes.frame)
-        if edge == .top {
-            return abs(intersection.minY - attributes.frame.minY) < CGFloat.bma_epsilon
-        } else {
-            return abs(intersection.maxY - attributes.frame.maxY) < CGFloat.bma_epsilon
+        switch edge {
+        case .top:
+            return abs(intersection.minY - attributes.frame.minY) < .bma_epsilon
+        case .bottom:
+            return abs(intersection.maxY - attributes.frame.maxY) < .bma_epsilon
         }
     }
 
     public func visibleRect() -> CGRect {
-        guard let collectionView = self.collectionView else { return CGRect.zero }
+        guard let collectionView = collectionView else { return .zero }
         let contentInset = collectionView.contentInset
         let collectionViewBounds = collectionView.bounds
         let contentSize = collectionView.collectionViewLayout.collectionViewContentSize
-        return CGRect(x: CGFloat(0), y: collectionView.contentOffset.y + contentInset.top, width: collectionViewBounds.width, height: min(contentSize.height, collectionViewBounds.height - contentInset.top - contentInset.bottom))
+        return CGRect(x: .zero, y: collectionView.contentOffset.y + contentInset.top, width: collectionViewBounds.width, height: min(contentSize.height, collectionViewBounds.height - contentInset.top - contentInset.bottom))
     }
 
-    @objc
-    open func scrollToBottom(animated: Bool) {
-        guard let collectionView = self.collectionView else { return }
+    @objc open func scrollToBottom(animated: Bool) {
+        guard let collectionView = collectionView else { return }
         // Cancel current scrolling
         collectionView.setContentOffset(collectionView.contentOffset, animated: false)
 
@@ -102,21 +106,19 @@ extension BaseChatViewController {
         // Don't use setContentOffset(:animated). If animated, contentOffset property will be updated along with the animation for each frame update
         // If a message is inserted while scrolling is happening (as in very fast typing), we want to take the "final" content offset (not the "real time" one) to check if we should scroll to bottom again
         if animated {
-            UIView.animate(withDuration: self.constants.updatesAnimationDuration, animations: { () -> Void in
-                collectionView.contentOffset = CGPoint(x: 0, y: offsetY)
-            })
+            UIView.animate(withDuration: constants.updatesAnimationDuration) {
+                collectionView.contentOffset = CGPoint(x: .zero, y: offsetY)
+            }
         } else {
-            collectionView.contentOffset = CGPoint(x: 0, y: offsetY)
+            collectionView.contentOffset = CGPoint(x: .zero, y: offsetY)
         }
     }
 
     public func scrollToPreservePosition(oldRefRect: CGRect?, newRefRect: CGRect?) {
         guard let collectionView = self.collectionView else { return }
-        guard let oldRefRect = oldRefRect, let newRefRect = newRefRect else {
-            return
-        }
+        guard let oldRefRect = oldRefRect, let newRefRect = newRefRect else { return }
         let diffY = newRefRect.minY - oldRefRect.minY
-        collectionView.contentOffset = CGPoint(x: 0, y: collectionView.contentOffset.y + diffY)
+        collectionView.contentOffset = CGPoint(x: .zero, y: collectionView.contentOffset.y + diffY)
     }
 
     public func scrollToItem(withId itemId: String,

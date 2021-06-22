@@ -27,31 +27,36 @@ import UIKit
 @objc open class ReusableXibView: UIView {
 
     func loadViewFromNib() -> UIView {
-        let bundle = Bundle.resources
-        let nib = UINib(nibName: type(of: self).nibName(), bundle: bundle)
+        let nib = UINib(nibName: type(of: self).nibName(), bundle: Bundle.resources)
         let view = nib.instantiate(withOwner: nil, options: nil).first as! UIView
         return view
     }
 
     override open func awakeAfter(using aDecoder: NSCoder) -> Any? {
-        if self.subviews.count > 0 {
+        if subviews.count > 0 {
             return self
         }
 
-        let bundle = Bundle.resources
-        if let loadedView = bundle.loadNibNamed(type(of: self).nibName(), owner: nil, options: nil)?.first as? UIView {
-            loadedView.frame = frame
-            loadedView.autoresizingMask = autoresizingMask
-            loadedView.translatesAutoresizingMaskIntoConstraints = translatesAutoresizingMaskIntoConstraints
-            for constraint in constraints {
-                let firstItem = constraint.firstItem === self ? loadedView : constraint.firstItem
-                let secondItem = constraint.secondItem === self ? loadedView : constraint.secondItem
-                loadedView.addConstraint(NSLayoutConstraint(item: firstItem as Any, attribute: constraint.firstAttribute, relatedBy: constraint.relation, toItem: secondItem, attribute: constraint.secondAttribute, multiplier: constraint.multiplier, constant: constraint.constant))
-            }
-            return loadedView
-        } else {
-            return nil
+        let nib = Bundle.resources.loadNibNamed(type(of: self).nibName(), owner: nil, options: nil)
+        guard let loadedView = nib?.first as? UIView else { return nil }
+        loadedView.frame = frame
+        loadedView.autoresizingMask = autoresizingMask
+        loadedView.translatesAutoresizingMaskIntoConstraints = translatesAutoresizingMaskIntoConstraints
+        for constraint in constraints {
+            let firstItem = constraint.firstItem === self ? loadedView : constraint.firstItem
+            let secondItem = constraint.secondItem === self ? loadedView : constraint.secondItem
+            let layoutConstraint = NSLayoutConstraint(
+                item: firstItem as Any,
+                attribute: constraint.firstAttribute,
+                relatedBy: constraint.relation,
+                toItem: secondItem,
+                attribute: constraint.secondAttribute,
+                multiplier: constraint.multiplier,
+                constant: constraint.constant
+            )
+            loadedView.addConstraint(layoutConstraint)
         }
+        return loadedView
     }
 
     class func nibName() -> String {

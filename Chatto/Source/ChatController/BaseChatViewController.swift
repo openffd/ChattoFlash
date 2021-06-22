@@ -65,7 +65,6 @@ open class BaseChatViewController: UIViewController,
     public var constants = Constants()
 
     public struct UpdatesConfig {
-
         // Allows another performBatchUpdates to be called before completion of a previous one (not recommended).
         // Changing this value after viewDidLoad is not supported
         public var fastUpdates = true
@@ -123,7 +122,6 @@ open class BaseChatViewController: UIViewController,
         } else {
             super.loadView()
         }
-
     }
 
     override open func viewDidLoad() {
@@ -137,12 +135,12 @@ open class BaseChatViewController: UIViewController,
     }
 
     private func setupTapGestureRecognizer() {
-        self.collectionView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(BaseChatViewController.userDidTapOnCollectionView)))
+        collectionView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(userDidTapOnCollectionView)))
     }
 
     public var endsEditingWhenTappingOnChatBackground = true
-    @objc
-    open func userDidTapOnCollectionView() {
+    
+    @objc open func userDidTapOnCollectionView() {
         if self.endsEditingWhenTappingOnChatBackground {
             self.view.endEditing(true)
         }
@@ -159,34 +157,32 @@ open class BaseChatViewController: UIViewController,
     }
 
     private func addCollectionView() {
-        let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.createCollectionViewLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.createCollectionViewLayout())
         collectionView.contentInset = self.layoutConfiguration.contentInsets
         collectionView.scrollIndicatorInsets = self.layoutConfiguration.scrollIndicatorInsets
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = UIColor.clear
+        collectionView.backgroundColor = .clear
         collectionView.keyboardDismissMode = .interactive
         collectionView.showsVerticalScrollIndicator = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.allowsSelection = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.autoresizingMask = []
-        self.view.addSubview(collectionView)
+        view.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            self.view.topAnchor.constraint(equalTo: collectionView.topAnchor),
-            self.view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)
+            view.topAnchor.constraint(equalTo: collectionView.topAnchor),
+            view.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor)
         ])
 
         let leadingAnchor: NSLayoutXAxisAnchor
         let trailingAnchor: NSLayoutXAxisAnchor
         if #available(iOS 11.0, *) {
-            let guide = self.view.safeAreaLayoutGuide
-            leadingAnchor = guide.leadingAnchor
-            trailingAnchor = guide.trailingAnchor
+            leadingAnchor = view.safeAreaLayoutGuide.leadingAnchor
+            trailingAnchor = view.safeAreaLayoutGuide.trailingAnchor
         } else {
-            leadingAnchor = self.view.leadingAnchor
-            trailingAnchor = self.view.trailingAnchor
+            leadingAnchor = view.leadingAnchor
+            trailingAnchor = view.trailingAnchor
         }
-
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor)
@@ -212,37 +208,36 @@ open class BaseChatViewController: UIViewController,
     var onAllBatchUpdatesFinished: (() -> Void)?
 
     var inputContainerBottomConstraint: NSLayoutConstraint!
+    
     private func addInputBarContainer() {
         self.inputBarContainer = UIView(frame: CGRect.zero)
         self.inputBarContainer.autoresizingMask = UIView.AutoresizingMask()
         self.inputBarContainer.translatesAutoresizingMaskIntoConstraints = false
-        self.inputBarContainer.backgroundColor = .white
+        self.inputBarContainer.backgroundColor = .clear
         self.view.addSubview(self.inputBarContainer)
         NSLayoutConstraint.activate([
-            self.inputBarContainer.topAnchor.constraint(greaterThanOrEqualTo: self.topLayoutGuide.bottomAnchor)
+            self.inputBarContainer.topAnchor.constraint(greaterThanOrEqualTo: topLayoutGuide.bottomAnchor)
         ])
         let leadingAnchor: NSLayoutXAxisAnchor
         let trailingAnchor: NSLayoutXAxisAnchor
         if #available(iOS 11.0, *) {
-            let guide = self.view.safeAreaLayoutGuide
-            leadingAnchor = guide.leadingAnchor
-            trailingAnchor = guide.trailingAnchor
+            leadingAnchor = view.safeAreaLayoutGuide.leadingAnchor
+            trailingAnchor = view.safeAreaLayoutGuide.trailingAnchor
         } else {
-            leadingAnchor = self.view.leadingAnchor
-            trailingAnchor = self.view.trailingAnchor
+            leadingAnchor = view.leadingAnchor
+            trailingAnchor = view.trailingAnchor
         }
-
         NSLayoutConstraint.activate([
-            self.inputBarContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
-            self.inputBarContainer.trailingAnchor.constraint(equalTo: trailingAnchor)
+            inputBarContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+            inputBarContainer.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
-        self.inputContainerBottomConstraint = self.view.bottomAnchor.constraint(equalTo: self.inputBarContainer.bottomAnchor)
-        self.view.addConstraint(self.inputContainerBottomConstraint)
+        inputContainerBottomConstraint = view.bottomAnchor.constraint(equalTo: inputBarContainer.bottomAnchor)
+        view.addConstraint(self.inputContainerBottomConstraint)
     }
 
     private func addInputView() {
-        let inputView = self.createChatInputView()
-        self.inputBarContainer.addSubview(inputView)
+        let inputView = createChatInputView()
+        inputBarContainer.addSubview(inputView)
         NSLayoutConstraint.activate([
             self.inputBarContainer.topAnchor.constraint(equalTo: inputView.topAnchor),
             self.inputBarContainer.bottomAnchor.constraint(equalTo: inputView.bottomAnchor),
@@ -252,16 +247,24 @@ open class BaseChatViewController: UIViewController,
     }
 
     private func addInputContentContainer() {
-        self.inputContentContainer = UIView(frame: CGRect.zero)
-        self.inputContentContainer.autoresizingMask = UIView.AutoresizingMask()
-        self.inputContentContainer.translatesAutoresizingMaskIntoConstraints = false
-        self.inputContentContainer.backgroundColor = .white
-        self.view.addSubview(self.inputContentContainer)
+        inputContentContainer = UIView(frame: .zero)
+        inputContentContainer.autoresizingMask = UIView.AutoresizingMask()
+        inputContentContainer.translatesAutoresizingMaskIntoConstraints = false
+        
+//        let backgroundColor: UIColor
+//        if #available(iOS 10.0, *) {
+//            backgroundColor = UIColor(displayP3Red: 58.0 / 255, green: 75.0 / 255, blue: 83.0 / 255, alpha: 1)
+//        } else {
+//            backgroundColor = UIColor(red: 58.0 / 255, green: 75.0 / 255, blue: 83.0 / 255, alpha: 1)
+//        }
+        inputContentContainer.backgroundColor = .clear //backgroundColor
+        
+        view.addSubview(inputContentContainer)
         NSLayoutConstraint.activate([
-            self.view.bottomAnchor.constraint(equalTo: self.inputContentContainer.bottomAnchor),
-            self.view.leadingAnchor.constraint(equalTo: self.inputContentContainer.leadingAnchor),
-            self.view.trailingAnchor.constraint(equalTo: self.inputContentContainer.trailingAnchor),
-            self.inputContentContainer.topAnchor.constraint(equalTo: self.inputBarContainer.bottomAnchor)
+            view.bottomAnchor.constraint(equalTo: self.inputContentContainer.bottomAnchor),
+            view.leadingAnchor.constraint(equalTo: self.inputContentContainer.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: self.inputContentContainer.trailingAnchor),
+            inputContentContainer.topAnchor.constraint(equalTo: self.inputBarContainer.bottomAnchor)
         ])
     }
 
@@ -324,6 +327,7 @@ open class BaseChatViewController: UIViewController,
     var keyboardTracker: KeyboardTracker!
 
     public private(set) var isFirstLayout: Bool = true
+    
     override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -580,7 +584,6 @@ open class BaseChatViewController: UIViewController,
 }
 
 extension BaseChatViewController { // Rotation
-
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         guard isViewLoaded else { return }

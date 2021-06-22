@@ -26,33 +26,37 @@ import UIKit
 
 public struct ChatInputBarAppearance {
     public struct SendButtonAppearance {
+        public var backgroundColor = UIColor.clear
+        public var borderColor = UIColor.clear
+        public var borderWidth: CGFloat = .zero
         public var font = UIFont.systemFont(ofSize: 16)
         public var insets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         public var title = ""
         public var titleColors: [UIControlStateWrapper: UIColor] = [
-            UIControlStateWrapper(state: .disabled): UIColor.bma_color(rgb: 0x9AA3AB),
-            UIControlStateWrapper(state: .normal): UIColor.bma_color(rgb: 0x303E45),
-            UIControlStateWrapper(state: .highlighted): UIColor.bma_color(rgb: 0x303E45).bma_blendWithColor(UIColor.white.withAlphaComponent(0.4))
+            UIControlStateWrapper(state: .disabled): UIColor.white,///UIColor.bma_color(rgb: 0x9AA3AB),
+            UIControlStateWrapper(state: .normal): UIColor.white, //bma_color(rgb: 0x303E45),
+            UIControlStateWrapper(state: .highlighted): UIColor.white //bma_color(rgb: 0x303E45).bma_blendWithColor(UIColor.white.withAlphaComponent(0.4))
         ]
         public let accessibilityIdentifier = "chatto.inputbar.button.send"
     }
 
     public struct TabBarAppearance {
         public var interItemSpacing: CGFloat = 10
-        public var height: CGFloat = 44
+        public var height: CGFloat = 0
         public var contentInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     }
 
     public struct TextInputAppearance {
-        public var font = UIFont.systemFont(ofSize: 12)
-        public var textColor = UIColor.black
+        public var backgroundColor = UIColor.clear
+        public var font = UIFont(name: "Montserrat-Regular", size: 12)! //UIFont.systemFont(ofSize: 12)
+        public var textColor = UIColor.white
         public var tintColor: UIColor?
         public var borderColor = UIColor.clear
         public var borderWidth: CGFloat = 0
-        public var placeholderFont = UIFont.systemFont(ofSize: 12)
-        public var placeholderColor = UIColor.gray
+        public var placeholderFont = UIFont(name: "Montserrat-Regular", size: 12)!
+        public var placeholderColor = UIColor.white.withAlphaComponent(0.95)
         public var placeholderText = ""
-        public var textInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        public var textInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         public let accessibilityIdentifier = "chatto.inputbar.inputfield.text"
     }
 

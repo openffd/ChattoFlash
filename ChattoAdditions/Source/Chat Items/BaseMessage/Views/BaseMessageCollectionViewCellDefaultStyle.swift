@@ -223,7 +223,7 @@ public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
 
     static func createDefaultDateTextStyle() -> DateTextStyle {
 //        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0x9aa3ab))
-        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0xBBBBBB))
+        return DateTextStyle(font: UIFont(name: "Montserrat-Regular", size: 12)!, color: UIColor.bma_color(rgb: 0xFFFFFF))
     }
 
     static func createDefaultLayoutConstants() -> BaseMessageCollectionViewCellLayoutConstants {

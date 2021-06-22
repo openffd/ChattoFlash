@@ -25,10 +25,19 @@
 import UIKit
 
 open class TextChatInputItem {
+    
     typealias Class = TextChatInputItem
+    
     public var textInputHandler: ((String) -> Void)?
 
+    open var selected = false {
+        didSet {
+            internalTabView.isSelected = selected
+        }
+    }
+    
     let buttonAppearance: TabInputButtonAppearance
+    
     public init(tabInputButtonAppearance: TabInputButtonAppearance = TextChatInputItem.createDefaultButtonAppearance()) {
         self.buttonAppearance = tabInputButtonAppearance
     }
@@ -36,22 +45,16 @@ open class TextChatInputItem {
     public static func createDefaultButtonAppearance() -> TabInputButtonAppearance {
         let bundle = Bundle.resources
         let images: [UIControlStateWrapper: UIImage] = [
-            UIControlStateWrapper(state: .normal): UIImage(named: "text-icon-unselected", in: bundle, compatibleWith: nil)!,
-            UIControlStateWrapper(state: .selected): UIImage(named: "text-icon-selected", in: bundle, compatibleWith: nil)!,
-            UIControlStateWrapper(state: .highlighted): UIImage(named: "text-icon-selected", in: bundle, compatibleWith: nil)!
+            UIControlStateWrapper(state: .normal):      UIImage(named: "text-icon-unselected", in: bundle, compatibleWith: nil)!,
+            UIControlStateWrapper(state: .selected):    UIImage(named: "text-icon-selected", in: bundle, compatibleWith: nil)!,
+            UIControlStateWrapper(state: .highlighted): UIImage(named: "text-icon-selected", in: bundle, compatibleWith: nil)!,
         ]
         return TabInputButtonAppearance(images: images, size: nil)
     }
 
-    lazy fileprivate var internalTabView: TabInputButton = {
-        return TabInputButton.makeInputButton(withAppearance: self.buttonAppearance, accessibilityID: "text.chat.input.view")
+    fileprivate lazy var internalTabView: TabInputButton = {
+        TabInputButton.makeInputButton(withAppearance: buttonAppearance, accessibilityID: "text.chat.input.view")
     }()
-
-    open var selected = false {
-        didSet {
-            self.internalTabView.isSelected = self.selected
-        }
-    }
 }
 
 // MARK: - ChatInputItemProtocol
@@ -61,7 +64,7 @@ extension TextChatInputItem: ChatInputItemProtocol {
     }
 
     public var expandedStateTopMargin: CGFloat {
-        return 0.0
+        return .zero
     }
 
     public var presentationMode: ChatInputItemPresentationMode {
@@ -77,13 +80,12 @@ extension TextChatInputItem: ChatInputItemProtocol {
     }
 
     public var tabView: UIView {
-        return self.internalTabView
+        return UIView() //internalTabView
     }
 
     public func handleInput(_ input: AnyObject) {
-        if let text = input as? String {
-            self.textInputHandler?(text)
-        }
+        guard let text = input as? String else { return }
+        textInputHandler?(text)
     }
 
     public var shouldSaveDraftMessage: Bool {

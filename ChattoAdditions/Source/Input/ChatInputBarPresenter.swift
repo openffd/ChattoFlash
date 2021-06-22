@@ -39,10 +39,12 @@ public class BasicChatInputBarPresenter: NSObject, ChatInputBarPresenter {
     let chatInputItems: [ChatInputItemProtocol]
     let notificationCenter: NotificationCenter
 
-    public init(chatInputBar: ChatInputBar,
-                chatInputItems: [ChatInputItemProtocol],
-                chatInputBarAppearance: ChatInputBarAppearance,
-                notificationCenter: NotificationCenter = NotificationCenter.default) {
+    public init(
+        chatInputBar: ChatInputBar,
+        chatInputItems: [ChatInputItemProtocol],
+        chatInputBarAppearance: ChatInputBarAppearance,
+        notificationCenter: NotificationCenter = .default
+    ) {
         self.chatInputBar = chatInputBar
         self.chatInputItems = chatInputItems
         self.chatInputBar.setAppearance(chatInputBarAppearance)
@@ -51,22 +53,31 @@ public class BasicChatInputBarPresenter: NSObject, ChatInputBarPresenter {
 
         self.chatInputBar.presenter = self
         self.chatInputBar.inputItems = self.chatInputItems
-        self.notificationCenter.addObserver(self, selector: #selector(keyboardDidChangeFrame), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
-        self.notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        self.notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        self.notificationCenter.addObserver(self, selector: #selector(handleOrienationDidChangeNotification), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
+        
+        self.notificationCenter.addObserver(
+            self, selector: #selector(keyboardDidChangeFrame), name: UIResponder.keyboardDidChangeFrameNotification, object: nil
+        )
+        self.notificationCenter.addObserver(
+            self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil
+        )
+        self.notificationCenter.addObserver(
+            self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil
+        )
+        self.notificationCenter.addObserver(
+            self, selector: #selector(handleOrienationDidChangeNotification), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil
+        )
     }
 
     deinit {
-        self.notificationCenter.removeObserver(self)
+        notificationCenter.removeObserver(self)
     }
 
     fileprivate(set) public var focusedItem: ChatInputItemProtocol? {
         willSet {
-            self.focusedItem?.selected = false
+            focusedItem?.selected = false
         }
         didSet {
-            self.focusedItem?.selected = true
+            focusedItem?.selected = true
         }
     }
 
@@ -97,7 +108,7 @@ public class BasicChatInputBarPresenter: NSObject, ChatInputBarPresenter {
 
     fileprivate func firstKeyboardInputItem() -> ChatInputItemProtocol? {
         var firstKeyboardInputItem: ChatInputItemProtocol?
-        for inputItem in self.chatInputItems where inputItem.presentationMode == .keyboard {
+        for inputItem in chatInputItems where inputItem.presentationMode == .keyboard {
             firstKeyboardInputItem = inputItem
             break
         }
@@ -127,8 +138,7 @@ public class BasicChatInputBarPresenter: NSObject, ChatInputBarPresenter {
 
     // MARK: Notifications handling
 
-    @objc
-    private func keyboardDidChangeFrame(_ notification: Notification) {
+    @objc private func keyboardDidChangeFrame(_ notification: Notification) {
         guard self.allowListenToChangeFrameEvents else { return }
         // When a modal controller is dismissed UIKit posts keyboard notifications before focus is returned to the previously selected item
         // Input bar height depends on a selected item so we shouldn't remember keyboard height without having a selected item
@@ -138,18 +148,15 @@ public class BasicChatInputBarPresenter: NSObject, ChatInputBarPresenter {
         self.lastKnownKeyboardHeight = value.cgRectValue.height - self.chatInputBar.bounds.height
     }
 
-    @objc
-    private func keyboardWillHide(_ notification: Notification) {
+    @objc private func keyboardWillHide(_ notification: Notification) {
         self.allowListenToChangeFrameEvents = false
     }
 
-    @objc
-    private func keyboardWillShow(_ notification: Notification) {
+    @objc private func keyboardWillShow(_ notification: Notification) {
         self.allowListenToChangeFrameEvents = true
     }
 
-    @objc
-    private func handleOrienationDidChangeNotification(_ notification: Notification) {
+    @objc private func handleOrienationDidChangeNotification(_ notification: Notification) {
         self.lastKnownKeyboardHeight = nil
         if let currentInputView = self.currentInputView {
             self.updateHeight(for: currentInputView)
@@ -158,6 +165,7 @@ public class BasicChatInputBarPresenter: NSObject, ChatInputBarPresenter {
 }
 
 // MARK: ChatInputBarPresenter
+
 extension BasicChatInputBarPresenter {
     public func onDidEndEditing() {
         self.focusedItem = nil
