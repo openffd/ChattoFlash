@@ -230,12 +230,6 @@ extension ChatInputBar {
         textView.textColor = appearance.textInputAppearance.textColor
         textView.tintColor = appearance.textInputAppearance.tintColor
         textView.backgroundColor = appearance.textInputAppearance.backgroundColor
-//        if #available(iOS 10.0, *) {
-//            textView.backgroundColor = UIColor(displayP3Red: 48.0 / 255, green: 62.0 / 255, blue: 69.0 / 255, alpha: 1)
-//        } else {
-//            textView.backgroundColor = UIColor(red: 48.0 / 255, green: 62.0 / 255, blue: 69.0 / 255, alpha: 1)
-//        }
-        
         textView.keyboardAppearance = .dark
         textView.keyboardDismissMode = .interactive
         
