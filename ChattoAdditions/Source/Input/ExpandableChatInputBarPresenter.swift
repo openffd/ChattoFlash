@@ -181,15 +181,15 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
     // MARK: Controllers updates handling
 
     private func onKeyboardStateDidChange(bottomMargin: CGFloat, keyboardStatus: KeyboardStatus) {
-        guard let inputPositionController = self.inputPositionController else { return }
-        if self.focusedItem == nil || self.focusedItem?.presentationMode == .keyboard {
+        guard let inputPositionController = inputPositionController else { return }
+        if focusedItem == nil || focusedItem?.presentationMode == .keyboard {
             inputPositionController.changeInputContentBottomMargin(bottomMargin, animated: false, callback: nil)
-        } else if let item = self.focusedItem {
+        } else if let item = focusedItem {
             switch keyboardStatus {
             case .shown, .showing:
-                inputPositionController.changeInputContentBottomMargin(self.expandedInputViewHeight(forItem: item), animated: true, callback: nil)
+                inputPositionController.changeInputContentBottomMargin(expandedInputViewHeight(forItem: item), animated: true, callback: nil)
             case .hidden, .hiding:
-                inputPositionController.changeInputContentBottomMargin(self.keyboardHeight, animated: true, callback: nil)
+                inputPositionController.changeInputContentBottomMargin(keyboardHeight, animated: true, callback: nil)
             }
         }
     }
