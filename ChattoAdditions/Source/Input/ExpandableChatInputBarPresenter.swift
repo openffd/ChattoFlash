@@ -106,7 +106,7 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
 
     private func setup(inputBar: UIView, inContainerOfInputBarController inputBarController: InputPositionControlling) {
         self.shouldIgnoreContainerBottomMarginUpdates = true
-        inputBarController.changeInputContentBottomMarginTo(self.keyboardHeight, animated: true, callback: {
+        inputBarController.changeInputContentBottomMargin(self.keyboardHeight, animated: true, callback: {
             self.shouldIgnoreContainerBottomMarginUpdates = false
         })
         let containerView: InputContainerView = {
@@ -174,7 +174,7 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
         self.lastKnownKeyboardHeight = nil
         if let currentInputView = self.currentInputView {
             currentInputView.contentHeight = self.keyboardHeight
-            self.inputPositionController?.changeInputContentBottomMarginTo(self.keyboardHeight, animated: true, callback: nil)
+            self.inputPositionController?.changeInputContentBottomMargin(self.keyboardHeight, animated: true, callback: nil)
         }
     }
 
@@ -183,13 +183,13 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
     private func onKeyboardStateDidChange(bottomMargin: CGFloat, keyboardStatus: KeyboardStatus) {
         guard let inputPositionController = self.inputPositionController else { return }
         if self.focusedItem == nil || self.focusedItem?.presentationMode == .keyboard {
-            inputPositionController.changeInputContentBottomMarginTo(bottomMargin, animated: false, callback: nil)
+            inputPositionController.changeInputContentBottomMargin(bottomMargin, animated: false, callback: nil)
         } else if let item = self.focusedItem {
             switch keyboardStatus {
             case .shown, .showing:
-                inputPositionController.changeInputContentBottomMarginTo(self.expandedInputViewHeight(forItem: item), animated: true, callback: nil)
+                inputPositionController.changeInputContentBottomMargin(self.expandedInputViewHeight(forItem: item), animated: true, callback: nil)
             case .hidden, .hiding:
-                inputPositionController.changeInputContentBottomMarginTo(self.keyboardHeight, animated: true, callback: nil)
+                inputPositionController.changeInputContentBottomMargin(self.keyboardHeight, animated: true, callback: nil)
             }
         }
     }
@@ -203,10 +203,10 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
                 self?.shouldIgnoreContainerBottomMarginUpdates = false
                 self?.cleanupFocusedItem(animated: true)
             }
-            inputPositionController.changeInputContentBottomMarginTo(0, animated: true, callback: callback)
+            inputPositionController.changeInputContentBottomMargin(0, animated: true, callback: callback)
         } else {
             let callback: () -> Void = { [weak self] in self?.shouldIgnoreContainerBottomMarginUpdates = false }
-            inputPositionController.changeInputContentBottomMarginTo(self.keyboardHeight, animated: true, callback: callback)
+            inputPositionController.changeInputContentBottomMargin(self.keyboardHeight, animated: true, callback: callback)
         }
     }
 
@@ -215,9 +215,9 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
         self.currentInputView?.endEditing(false)
         guard let inputPositionController = self.inputPositionController else { return }
         if location.y > 0 {
-            inputPositionController.changeInputContentBottomMarginTo(inputPositionController.inputContentBottomMargin - location.y, animated: false, callback: nil)
+            inputPositionController.changeInputContentBottomMargin(inputPositionController.inputContentBottomMargin - location.y, animated: false, callback: nil)
         } else if inputPositionController.inputContentBottomMargin < self.keyboardHeight && velocity.y < 0 {
-            inputPositionController.changeInputContentBottomMarginTo(min(self.keyboardHeight, inputPositionController.inputContentBottomMargin - location.y), animated: false, callback: nil)
+            inputPositionController.changeInputContentBottomMargin(min(self.keyboardHeight, inputPositionController.inputContentBottomMargin - location.y), animated: false, callback: nil)
         }
         if inputPositionController.inputContentBottomMargin == 0 {
             self.cleanupFocusedItem(animated: true)
@@ -234,7 +234,7 @@ public class ExpandableChatInputBarPresenter: NSObject, ChatInputBarPresenter {
     private func hideContentView(withVelocity velocity: CGPoint) {
         self.shouldIgnoreContainerBottomMarginUpdates = true
         let velocityAwareDuration = min(Double(self.keyboardHeight / velocity.y), CATransaction.animationDuration())
-        self.inputPositionController?.changeInputContentBottomMarginTo(0, animated: true, duration: velocityAwareDuration, initialSpringVelocity: velocity.y, callback: { [weak self] in
+        self.inputPositionController?.changeInputContentBottomMargin(0, animated: true, duration: velocityAwareDuration, initialSpringVelocity: velocity.y, callback: { [weak self] in
             self?.shouldIgnoreContainerBottomMarginUpdates = false
             self?.cleanupFocusedItem(animated: true)
         })

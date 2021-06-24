@@ -63,31 +63,31 @@ class KeyboardTracker {
         self.notificationCenter = notificationCenter
         self.notificationCenter.addObserver(
             self,
-            selector: #selector(KeyboardTracker.keyboardWillShow(_:)),
+            selector: #selector(keyboardWillShow(_:)),
             name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
         self.notificationCenter.addObserver(
             self,
-            selector: #selector(KeyboardTracker.keyboardDidShow(_:)),
+            selector: #selector(keyboardDidShow(_:)),
             name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
         self.notificationCenter.addObserver(
             self,
-            selector: #selector(KeyboardTracker.keyboardWillHide(_:)),
+            selector: #selector(keyboardWillHide(_:)),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
         self.notificationCenter.addObserver(
             self,
-            selector: #selector(KeyboardTracker.keyboardDidHide(_:)),
+            selector: #selector(keyboardDidHide(_:)),
             name: UIResponder.keyboardDidHideNotification,
             object: nil
         )
         self.notificationCenter.addObserver(
             self,
-            selector: #selector(KeyboardTracker.keyboardWillChangeFrame(_:)),
+            selector: #selector(keyboardWillChangeFrame(_:)),
             name: UIResponder.keyboardWillChangeFrameNotification,
             object: nil
         )
@@ -260,10 +260,7 @@ private class KeyboardTrackingView: UIView {
         super.didMoveToSuperview()
     }
 
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey: Any]?,
-                               context: UnsafeMutableRawPointer?) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         guard let object = object as? UIView, let superview = self.superview else { return }
         if object === superview {
             guard let sChange = change else { return }

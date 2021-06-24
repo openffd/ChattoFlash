@@ -31,11 +31,10 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
     public struct Colors {
         let incoming: () -> UIColor
         let outgoing: () -> UIColor
-        public init(
-            incoming: @autoclosure @escaping () -> UIColor,
-            outgoing: @autoclosure @escaping () -> UIColor) {
-                self.incoming = incoming
-                self.outgoing = outgoing
+        
+        public init(incoming: @autoclosure @escaping () -> UIColor, outgoing: @autoclosure @escaping () -> UIColor) {
+            self.incoming = incoming
+            self.outgoing = outgoing
         }
     }
 
@@ -44,43 +43,44 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
         public let borderIncomingNoTail: () -> UIImage
         public let borderOutgoingTail: () -> UIImage
         public let borderOutgoingNoTail: () -> UIImage
+        
         public init(
             borderIncomingTail: @autoclosure @escaping () -> UIImage,
             borderIncomingNoTail: @autoclosure @escaping () -> UIImage,
             borderOutgoingTail: @autoclosure @escaping () -> UIImage,
-            borderOutgoingNoTail: @autoclosure @escaping () -> UIImage) {
-                self.borderIncomingTail = borderIncomingTail
-                self.borderIncomingNoTail = borderIncomingNoTail
-                self.borderOutgoingTail = borderOutgoingTail
-                self.borderOutgoingNoTail = borderOutgoingNoTail
+            borderOutgoingNoTail: @autoclosure @escaping () -> UIImage
+        ) {
+            self.borderIncomingTail = borderIncomingTail
+            self.borderIncomingNoTail = borderIncomingNoTail
+            self.borderOutgoingTail = borderOutgoingTail
+            self.borderOutgoingNoTail = borderOutgoingNoTail
         }
     }
 
     public struct FailedIconImages {
         let normal: () -> UIImage
         let highlighted: () -> UIImage
-        public init(
-            normal: @autoclosure @escaping () -> UIImage,
-            highlighted: @autoclosure @escaping () -> UIImage) {
-                self.normal = normal
-                self.highlighted = highlighted
+        
+        public init(normal: @autoclosure @escaping () -> UIImage, highlighted: @autoclosure @escaping () -> UIImage) {
+            self.normal = normal
+            self.highlighted = highlighted
         }
     }
 
     public struct DateTextStyle {
         let font: () -> UIFont
         let color: () -> UIColor
-        public init(
-            font: @autoclosure @escaping () -> UIFont,
-            color: @autoclosure @escaping () -> UIColor) {
-                self.font = font
-                self.color = color
+        
+        public init(font: @autoclosure @escaping () -> UIFont, color: @autoclosure @escaping () -> UIColor) {
+            self.font = font
+            self.color = color
         }
     }
 
     public struct AvatarStyle {
         let size: CGSize
         let alignment: VerticalAlignment
+        
         public init(size: CGSize = .zero, alignment: VerticalAlignment = .bottom) {
             self.size = size
             self.alignment = alignment
@@ -91,9 +91,12 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
         let margins: UIEdgeInsets
         let selectedIcon: () -> UIImage
         let deselectedIcon: () -> UIImage
-        public init(margins: UIEdgeInsets,
-                    selectedIcon: @autoclosure @escaping () -> UIImage,
-                    deselectedIcon: @autoclosure @escaping () -> UIImage) {
+        
+        public init(
+            margins: UIEdgeInsets,
+            selectedIcon: @autoclosure @escaping () -> UIImage,
+            deselectedIcon: @autoclosure @escaping () -> UIImage
+        ) {
             self.margins = margins
             self.selectedIcon = selectedIcon
             self.deselectedIcon = deselectedIcon
@@ -138,14 +141,13 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
 
     public lazy var baseColorIncoming: UIColor = self.colors.incoming()
     public lazy var baseColorOutgoing: UIColor = self.colors.outgoing()
-
     public lazy var borderIncomingTail: UIImage? = self.bubbleBorderImages?.borderIncomingTail()
     public lazy var borderIncomingNoTail: UIImage? = self.bubbleBorderImages?.borderIncomingNoTail()
     public lazy var borderOutgoingTail: UIImage? = self.bubbleBorderImages?.borderOutgoingTail()
     public lazy var borderOutgoingNoTail: UIImage? = self.bubbleBorderImages?.borderOutgoingNoTail()
-
     public lazy var failedIcon: UIImage = self.failedIconImages.normal()
     public lazy var failedIconHighlighted: UIImage = self.failedIconImages.highlighted()
+    
     public let replyIndicatorStyle: ReplyIndicatorStyle?
 
     private let dateStringAttributes: [NSAttributedString.Key: AnyObject]
@@ -157,44 +159,47 @@ open class BaseMessageCollectionViewCellDefaultStyle: BaseMessageCollectionViewC
     open func borderImage(viewModel: MessageViewModelProtocol) -> UIImage? {
         switch (viewModel.isIncoming, viewModel.decorationAttributes.isShowingTail) {
         case (true, true):
-            return self.borderIncomingTail
+            return borderIncomingTail
         case (true, false):
-            return self.borderIncomingNoTail
+            return borderIncomingNoTail
         case (false, true):
-            return self.borderOutgoingTail
+            return borderOutgoingTail
         case (false, false):
-            return self.borderOutgoingNoTail
+            return borderOutgoingNoTail
         }
     }
 
     open func avatarSize(viewModel: MessageViewModelProtocol) -> CGSize {
-        return self.avatarStyle(for: viewModel).size
+        return avatarStyle(for: viewModel).size
     }
 
     open func avatarVerticalAlignment(viewModel: MessageViewModelProtocol) -> VerticalAlignment {
-        return self.avatarStyle(for: viewModel).alignment
+        return avatarStyle(for: viewModel).alignment
     }
 
     public var selectionIndicatorMargins: UIEdgeInsets {
-        return self.selectionIndicatorStyle.margins
+        return selectionIndicatorStyle.margins
     }
 
     public func selectionIndicatorIcon(for viewModel: MessageViewModelProtocol) -> UIImage {
-        return viewModel.decorationAttributes.isSelected ? self.selectionIndicatorStyle.selectedIcon() : self.selectionIndicatorStyle.deselectedIcon()
+        if viewModel.decorationAttributes.isSelected {
+            return selectionIndicatorStyle.selectedIcon()
+        } else {
+            return selectionIndicatorStyle.deselectedIcon()
+        }
     }
 
     open func layoutConstants(viewModel: MessageViewModelProtocol) -> BaseMessageCollectionViewCellLayoutConstants {
-        return self.layoutConstants
+        return layoutConstants
     }
 
     private func avatarStyle(for viewModel: MessageViewModelProtocol) -> AvatarStyle {
-        return viewModel.isIncoming ? self.incomingAvatarStyle : self.outgoingAvatarStyle
+        return viewModel.isIncoming ? incomingAvatarStyle : outgoingAvatarStyle
     }
 }
 
-public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
+public extension BaseMessageCollectionViewCellDefaultStyle {
 
-//    private static let defaultIncomingColor = UIColor.bma_color(rgb: 0xE6ECF2)
     private static let defaultIncomingColor = UIColor.bma_color(rgb: 0x4D636F)
     private static let defaultOutgoingColor = UIColor.bma_color(rgb: 0x607D8B)
 
@@ -204,26 +209,20 @@ public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
 
     static func createDefaultBubbleBorderImages() -> BubbleBorderImages {
         return BubbleBorderImages(
-            borderIncomingTail: UIImage(named: "bubble-incoming-border-tail", in: Bundle.resources, compatibleWith: nil)!,
-            borderIncomingNoTail: UIImage(named: "bubble-incoming-border", in: Bundle.resources, compatibleWith: nil)!,
-            borderOutgoingTail: UIImage(named: "bubble-outgoing-border-tail", in: Bundle.resources, compatibleWith: nil)!,
-            borderOutgoingNoTail: UIImage(named: "bubble-outgoing-border", in: Bundle.resources, compatibleWith: nil)!
+            borderIncomingTail: UIImage(named: "bubble-incoming-border-tail", in: .resources, compatibleWith: nil)!,
+            borderIncomingNoTail: UIImage(named: "bubble-incoming-border", in: .resources, compatibleWith: nil)!,
+            borderOutgoingTail: UIImage(named: "bubble-outgoing-border-tail", in: .resources, compatibleWith: nil)!,
+            borderOutgoingNoTail: UIImage(named: "bubble-outgoing-border", in: .resources, compatibleWith: nil)!
         )
     }
 
     static func createDefaultFailedIconImages() -> FailedIconImages {
-        let normal = {
-            return UIImage(named: "base-message-failed-icon", in: Bundle.resources, compatibleWith: nil)!
-        }
-        return FailedIconImages(
-            normal: normal(),
-            highlighted: normal().bma_blendWithColor(UIColor.black.withAlphaComponent(0.10))
-        )
+        let image = UIImage(named: "base-message-failed-icon", in: .resources, compatibleWith: nil)!
+        return FailedIconImages(normal: image, highlighted: image.bma_blendWithColor(.black.withAlphaComponent(0.10)))
     }
 
     static func createDefaultDateTextStyle() -> DateTextStyle {
-//        return DateTextStyle(font: UIFont.systemFont(ofSize: 12), color: UIColor.bma_color(rgb: 0x9aa3ab))
-        DateTextStyle(font: UIFont(name: "Montserrat-Regular", size: 11)!, color: UIColor.bma_color(rgb: 0xBBBBBB))
+        DateTextStyle(font: UIFont(name: "Montserrat-Regular", size: 10.5)!, color: UIColor.bma_color(rgb: 0xBBBBBB))
     }
 
     static func createDefaultLayoutConstants() -> BaseMessageCollectionViewCellLayoutConstants {
@@ -236,8 +235,14 @@ public extension BaseMessageCollectionViewCellDefaultStyle { // Default values
         return constants
     }
 
-    private static let selectionIndicatorIconSelected = UIImage(named: "base-message-checked-icon", in: Bundle.resources, compatibleWith: nil)!.bma_tintWithColor(BaseMessageCollectionViewCellDefaultStyle.defaultOutgoingColor)
-    private static let selectionIndicatorIconDeselected = UIImage(named: "base-message-unchecked-icon", in: Bundle.resources, compatibleWith: nil)!.bma_tintWithColor(UIColor.bma_color(rgb: 0xC6C6C6))
+    private static let selectionIndicatorIconSelected: UIImage = {
+        let image = UIImage(named: "base-message-checked-icon", in: Bundle.resources, compatibleWith: nil)!
+        return image.bma_tintWithColor(BaseMessageCollectionViewCellDefaultStyle.defaultOutgoingColor)
+    }()
+    private static let selectionIndicatorIconDeselected: UIImage = {
+        let image = UIImage(named: "base-message-unchecked-icon", in: Bundle.resources, compatibleWith: nil)!
+        return image.bma_tintWithColor(UIColor.bma_color(rgb: 0xC6C6C6))
+    }()
 
     static func createDefaultSelectionIndicatorStyle() -> SelectionIndicatorStyle {
         return SelectionIndicatorStyle(

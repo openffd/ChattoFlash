@@ -39,41 +39,41 @@ public struct ChatItemCompanionCollection: Collection {
     }
 
     public func indexOf(_ uid: String) -> Int? {
-        return self.itemIndexesById[uid]
+        itemIndexesById[uid]
     }
 
     public subscript(index: Int) -> ChatItemCompanion {
-        return self.items[index]
+        items[index]
     }
 
     public subscript(uid: String) -> ChatItemCompanion? {
-        if let index = self.indexOf(uid) {
-            return self.items[index]
+        if let index = indexOf(uid) {
+            return items[index]
         }
         return nil
     }
 
     public func makeIterator() -> IndexingIterator<[ChatItemCompanion]> {
-        return self.items.makeIterator()
+        items.makeIterator()
     }
 
     public func index(_ i: Int, offsetBy n: Int) -> Int {
-        return self.items.index(i, offsetBy: n)
+        items.index(i, offsetBy: n)
     }
 
     public func index(_ i: Int, offsetBy n: Int, limitedBy limit: Int) -> Int? {
-        return self.items.index(i, offsetBy: n, limitedBy: limit)
+        items.index(i, offsetBy: n, limitedBy: limit)
     }
 
     public func index(after i: Int) -> Int {
-        return self.items.index(after: i)
+        items.index(after: i)
     }
 
     public var startIndex: Int {
-        return 0
+        .zero
     }
 
     public var endIndex: Int {
-        return self.items.count
+        items.count
     }
 }

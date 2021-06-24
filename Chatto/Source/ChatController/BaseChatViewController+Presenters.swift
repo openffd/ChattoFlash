@@ -84,28 +84,30 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     @objc(collectionView:shouldShowMenuForItemAtIndexPath:)
-    open func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath?) -> Bool {
+    open func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
         // Note: IndexPath set optional due to https://github.com/badoo/Chatto/issues/310
         // Might be related: https://bugs.swift.org/browse/SR-2417
-        guard let indexPath = indexPath else { return false }
-        return self.presenterForIndexPath(indexPath).shouldShowMenu()
+        
+//        guard let indexPath = indexPath else { return false }
+        return presenterForIndexPath(indexPath).shouldShowMenu()
     }
 
     @objc(collectionView:canPerformAction:forItemAtIndexPath:withSender:)
-    open func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath?, withSender sender: Any?) -> Bool {
+    open func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
         // Note: IndexPath set optional due to https://github.com/badoo/Chatto/issues/247. SR-2417 might be related
         // Might be related: https://bugs.swift.org/browse/SR-2417
-        guard let indexPath = indexPath else { return false }
-        return self.presenterForIndexPath(indexPath).canPerformMenuControllerAction(action)
+        
+//        guard let indexPath = indexPath else { return false }
+        return presenterForIndexPath(indexPath).canPerformMenuControllerAction(action)
     }
 
     @objc(collectionView:performAction:forItemAtIndexPath:withSender:)
     open func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-        self.presenterForIndexPath(indexPath).performMenuControllerAction(action)
+        presenterForIndexPath(indexPath).performMenuControllerAction(action)
     }
 
     func presenterForIndexPath(_ indexPath: IndexPath) -> ChatItemPresenterProtocol {
-        return self.presenterForIndex(indexPath.item, chatItemCompanionCollection: self.chatItemCompanionCollection)
+        return presenterForIndex(indexPath.item, chatItemCompanionCollection: self.chatItemCompanionCollection)
     }
 
     func presenterForIndex(_ index: Int, chatItemCompanionCollection items: ChatItemCompanionCollection) -> ChatItemPresenterProtocol {
@@ -117,18 +119,18 @@ extension BaseChatViewController: ChatCollectionViewLayoutDelegate {
     }
 
     public func createPresenterForChatItem(_ chatItem: ChatItemProtocol) -> ChatItemPresenterProtocol {
-        assert(self.presenterFactory != nil, "Presenter factory is not initialized")
-        return self.presenterFactory.createChatItemPresenter(chatItem)
+        assert(presenterFactory != nil, "Presenter factory is not initialized")
+        return presenterFactory.createChatItemPresenter(chatItem)
     }
 
     public func confugureCollectionViewWithPresenters() {
-        assert(self.presenterFactory == nil, "Presenter factory is already initialized")
-        guard let collectionView = self.collectionView else {
+        assert(presenterFactory == nil, "Presenter factory is already initialized")
+        guard let collectionView = collectionView else {
             assertionFailure("CollectionView is not initialized")
             return
         }
-        self.presenterFactory = self.createPresenterFactory()
-        self.presenterFactory.configure(withCollectionView: collectionView )
+        presenterFactory = createPresenterFactory()
+        presenterFactory.configure(withCollectionView: collectionView )
     }
 
     public func decorationAttributesForIndexPath(_ indexPath: IndexPath) -> ChatItemDecorationAttributesProtocol? {

@@ -37,12 +37,55 @@ public protocol ReplyActionHandler: AnyObject {
     func handleReply(for: ChatItemProtocol)
 }
 
-open class BaseChatViewController: UIViewController,
-                                   UICollectionViewDataSource,
-                                   UICollectionViewDelegate,
-                                   ChatDataSourceDelegateProtocol,
-                                   InputPositionControlling,
-                                   ReplyIndicatorRevealerDelegate {
+final class DynamicCollectionViewFlowLayout: UICollectionViewFlowLayout {
+    private var dynamicAnimator: UIDynamicAnimator?
+    
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        if let animator = dynamicAnimator {
+            return animator.items(in: rect) as? [UICollectionViewLayoutAttributes]
+        }
+        
+        dynamicAnimator = UIDynamicAnimator(collectionViewLayout: self)
+        
+        guard let items = super.layoutAttributesForElements(in: rect) else { return nil }
+        items.forEach {
+            let attachmentBehavior = UIAttachmentBehavior(item: $0, attachedToAnchor: $0.center)
+            attachmentBehavior.length = .zero
+            attachmentBehavior.damping = 0.4
+            attachmentBehavior.frequency = 1
+            dynamicAnimator?.addBehavior(attachmentBehavior)
+        }
+        return items
+    }
+    
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        dynamicAnimator?.layoutAttributesForCell(at: indexPath)
+    }
+    
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        guard let dynamicAnimator = dynamicAnimator, let scrollView = collectionView else { return false }
+        let delta = newBounds.origin.y - scrollView.bounds.origin.y
+        let touchLocation = scrollView.panGestureRecognizer.location(in: scrollView)
+        dynamicAnimator.behaviors.forEach {
+            guard let springBehavior = $0 as? UIAttachmentBehavior else { return }
+            let yDistanceFromTouch = touchLocation.y - springBehavior.anchorPoint.y
+            let xDistanceFromTouch = touchLocation.x - springBehavior.anchorPoint.x
+            let scrollResistance = (yDistanceFromTouch + xDistanceFromTouch) / 1500
+            guard let attributes = springBehavior.items.first as? UICollectionViewLayoutAttributes else { return }
+            var center = attributes.center
+            if delta < .zero {
+                center.y += max(delta, delta * scrollResistance)
+            } else {
+                center.y += min(delta, delta * scrollResistance)
+            }
+            attributes.center = center
+            dynamicAnimator.updateItem(usingCurrentState: attributes)
+        }
+        return false
+    }
+}
+
+open class BaseChatViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, ChatDataSourceDelegateProtocol, InputPositionControlling, ReplyIndicatorRevealerDelegate {
 
     open weak var keyboardEventsHandler: KeyboardEventsHandling?
     open weak var scrollViewEventsHandler: ScrollViewEventsHandling?
@@ -51,74 +94,79 @@ open class BaseChatViewController: UIViewController,
 
     open var layoutConfiguration: ChatLayoutConfigurationProtocol = ChatLayoutConfiguration.defaultConfiguration {
         didSet {
-            self.adjustCollectionViewInsets(shouldUpdateContentOffset: false)
+            adjustCollectionViewInsets(shouldUpdateContentOffset: false)
         }
     }
 
     public struct Constants {
         public var updatesAnimationDuration: TimeInterval = 0.33
-        public var preferredMaxMessageCount: Int? = 500 // If not nil, will ask data source to reduce number of messages when limit is reached. @see ChatDataSourceDelegateProtocol
-        public var preferredMaxMessageCountAdjustment: Int = 400 // When the above happens, will ask to adjust with this value. It may be wise for this to be smaller to reduce number of adjustments
-        public var autoloadingFractionalThreshold: CGFloat = 0.05 // in [0, 1]
+        
+        /// If not nil, will ask data source to reduce number of messages when limit is reached. @see ChatDataSourceDelegateProtocol
+        public var preferredMaxMessageCount: Int? = 500
+        
+        /// When the above happens, will ask to adjust with this value. It may be wise for this to be smaller to reduce number of adjustments
+        public var preferredMaxMessageCountAdjustment: Int = 400
+        
+        public var autoloadingFractionalThreshold: CGFloat = 0.05 /// Within [0, 1]
     }
 
     public var constants = Constants()
 
     public struct UpdatesConfig {
-        // Allows another performBatchUpdates to be called before completion of a previous one (not recommended).
-        // Changing this value after viewDidLoad is not supported
+        /// Allows another performBatchUpdates to be called before completion of a previous one (not recommended). Changing this value after viewDidLoad is not supported
         public var fastUpdates = true
 
-        // If receiving data source updates too fast, while an update it's being processed, only the last one will be executed
+        /// If receiving data source updates too fast, while an update it's being processed, only the last one will be executed
         public var coalesceUpdates = true
     }
 
     public var updatesConfig =  UpdatesConfig()
 
-    open var customPresentersConfigurationPoint = false // If true then confugureCollectionViewWithPresenters() will not be called in viewDidLoad() method and has to be called manually
+    /// If true then confugureCollectionViewWithPresenters() will not be called in viewDidLoad() method and has to be called manually
+    open var customPresentersConfigurationPoint = false
 
     public private(set) var collectionView: UICollectionView?
+    
     public final internal(set) var chatItemCompanionCollection = ChatItemCompanionCollection(items: [])
+    
     private var _chatDataSource: ChatDataSourceProtocol?
+    
     public final var chatDataSource: ChatDataSourceProtocol? {
-        get {
-            return _chatDataSource
-        }
-        set {
-            self.setChatDataSource(newValue, triggeringUpdateType: .normal)
-        }
+        get { return _chatDataSource }
+        set { setChatDataSource(newValue, triggeringUpdateType: .normal) }
     }
 
-    // If set to false messages will start appearing on top and goes down
-    // If true then messages will start from bottom and goes up.
+    /// If set to false messages will start appearing on top and goes down
+    /// If true then messages will start from bottom and goes up.
     public var placeMessagesFromBottom = false {
         didSet {
-            self.adjustCollectionViewInsets(shouldUpdateContentOffset: false)
+            adjustCollectionViewInsets(shouldUpdateContentOffset: false)
         }
     }
 
-    // If set to false user is responsible to make sure that view provided in loadView() implements BaseChatViewContollerViewProtocol.
-    // Must be set before loadView is called.
+    /// If set to false user is responsible to make sure that view provided in loadView() implements BaseChatViewContollerViewProtocol.
+    /// Must be set before loadView is called.
     public var substitutesMainViewAutomatically = true
 
-    // Custom update on setting the data source. if triggeringUpdateType is nil it won't enqueue any update (you should do it later manually)
+    /// Custom update on setting the data source. if triggeringUpdateType is nil it won't enqueue any update (you should do it later manually)
     public final func setChatDataSource(_ dataSource: ChatDataSourceProtocol?, triggeringUpdateType updateType: UpdateType?) {
-        self._chatDataSource = dataSource
-        self._chatDataSource?.delegate = self
+        _chatDataSource = dataSource
+        _chatDataSource?.delegate = self
         if let updateType = updateType {
-            self.enqueueModelUpdate(updateType: updateType)
+            enqueueModelUpdate(updateType: updateType)
         }
     }
 
     deinit {
-        self.collectionView?.delegate = nil
-        self.collectionView?.dataSource = nil
+        collectionView?.delegate = nil
+        collectionView?.dataSource = nil
     }
 
     open override func loadView() { // swiftlint:disable:this prohibited_super_call
         if substitutesMainViewAutomatically {
-            self.view = BaseChatViewControllerView() // http://stackoverflow.com/questions/24596031/uiviewcontroller-with-inputaccessoryview-is-not-deallocated
-            self.view.backgroundColor = UIColor.white
+            // http://stackoverflow.com/questions/24596031/uiviewcontroller-with-inputaccessoryview-is-not-deallocated
+            view = BaseChatViewControllerView()
+            view.backgroundColor = .white
         } else {
             super.loadView()
         }
@@ -126,12 +174,12 @@ open class BaseChatViewController: UIViewController,
 
     override open func viewDidLoad() {
         super.viewDidLoad()
-        self.addCollectionView()
-        self.addInputBarContainer()
-        self.addInputView()
-        self.addInputContentContainer()
-        self.setupKeyboardTracker()
-        self.setupTapGestureRecognizer()
+        addCollectionView()
+        addInputBarContainer()
+        addInputView()
+        addInputContentContainer()
+        setupKeyboardTracker()
+        setupTapGestureRecognizer()
     }
 
     private func setupTapGestureRecognizer() {
@@ -141,25 +189,25 @@ open class BaseChatViewController: UIViewController,
     public var endsEditingWhenTappingOnChatBackground = true
     
     @objc open func userDidTapOnCollectionView() {
-        if self.endsEditingWhenTappingOnChatBackground {
-            self.view.endEditing(true)
+        if endsEditingWhenTappingOnChatBackground {
+            view.endEditing(true)
         }
     }
 
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.keyboardTracker.startTracking()
+        keyboardTracker.startTracking()
     }
 
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.keyboardTracker?.stopTracking()
+        keyboardTracker?.stopTracking()
     }
 
     private func addCollectionView() {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.createCollectionViewLayout())
-        collectionView.contentInset = self.layoutConfiguration.contentInsets
-        collectionView.scrollIndicatorInsets = self.layoutConfiguration.scrollIndicatorInsets
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+        collectionView.contentInset = layoutConfiguration.contentInsets
+        collectionView.scrollIndicatorInsets = layoutConfiguration.scrollIndicatorInsets
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .clear
         collectionView.keyboardDismissMode = .interactive
@@ -167,6 +215,7 @@ open class BaseChatViewController: UIViewController,
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.allowsSelection = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        collectionView.collectionViewLayout = DynamicCollectionViewFlowLayout()
         collectionView.autoresizingMask = []
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
@@ -193,14 +242,15 @@ open class BaseChatViewController: UIViewController,
         collectionView.chatto_setContentInsetAdjustment(enabled: false, in: self)
         collectionView.chatto_setAutomaticallyAdjustsScrollIndicatorInsets(false)
         collectionView.chatto_setIsPrefetchingEnabled(false)
-
-        self.cellPanGestureHandler = CellPanGestureHandler(collectionView: collectionView)
-        self.cellPanGestureHandler.replyDelegate = self
-        self.cellPanGestureHandler.config = self.cellPanGestureHandlerConfig
         self.collectionView = collectionView
+        
+        let cellPanGestureHandler = CellPanGestureHandler(collectionView: collectionView)
+        cellPanGestureHandler.replyDelegate = self
+        cellPanGestureHandler.config = cellPanGestureHandlerConfig
+        self.cellPanGestureHandler = cellPanGestureHandler
 
-        if !self.customPresentersConfigurationPoint {
-            self.confugureCollectionViewWithPresenters()
+        if !customPresentersConfigurationPoint {
+            confugureCollectionViewWithPresenters()
         }
     }
 
@@ -293,18 +343,18 @@ open class BaseChatViewController: UIViewController,
             }
 
             if navigatedController.hidesBottomBarWhenPushed && (navigationController?.viewControllers.count ?? 0) > 1 && navigationController?.viewControllers.last == navigatedController {
-                self.inputContainerBottomBaseOffset = 0
+                self.inputContainerBottomBaseOffset = .zero
             } else {
                 self.inputContainerBottomBaseOffset = self.bottomLayoutGuide.length
             }
         }
     }
 
-    private var inputContainerBottomBaseOffset: CGFloat = 0 {
+    private var inputContainerBottomBaseOffset: CGFloat = .zero {
         didSet { self.updateInputContainerBottomConstraint() }
     }
 
-    private var inputContainerBottomAdditionalOffset: CGFloat = 0 {
+    private var inputContainerBottomAdditionalOffset: CGFloat = .zero {
         didSet { self.updateInputContainerBottomConstraint() }
     }
 
@@ -321,7 +371,7 @@ open class BaseChatViewController: UIViewController,
             if let keyboardObservingDelegate = sSelf.keyboardEventsHandler {
                 keyboardObservingDelegate.onKeyboardStateDidChange(bottomMargin, keyboardStatus)
             } else {
-                sSelf.changeInputContentBottomMarginTo(bottomMargin)
+                sSelf.changeInputContentBottomMargin(bottomMargin)
             }
         }
         self.keyboardTracker = KeyboardTracker(viewController: self, inputBarContainer: self.inputBarContainer, heightBlock: heightBlock, notificationCenter: self.notificationCenter)
@@ -359,11 +409,12 @@ open class BaseChatViewController: UIViewController,
     }
 
     private var previousBoundsUsedForInsetsAdjustment: CGRect?
+    
     func adjustCollectionViewInsets(shouldUpdateContentOffset: Bool) {
-        guard let collectionView = self.collectionView else { return }
+        guard let collectionView = collectionView else { return }
         let isInteracting = collectionView.panGestureRecognizer.numberOfTouches > 0
         let isBouncingAtTop = isInteracting && collectionView.contentOffset.y < -collectionView.contentInset.top
-        if !self.placeMessagesFromBottom && isBouncingAtTop { return }
+        if !placeMessagesFromBottom && isBouncingAtTop { return }
 
         let inputHeightWithKeyboard = self.view.bounds.height - self.inputBarContainer.frame.minY
         let newInsetBottom = self.layoutConfiguration.contentInsets.bottom + inputHeightWithKeyboard
@@ -371,28 +422,26 @@ open class BaseChatViewController: UIViewController,
         var newInsetTop = self.topLayoutGuide.length + self.layoutConfiguration.contentInsets.top
         let contentSize = collectionView.collectionViewLayout.collectionViewContentSize
 
-        let needToPlaceMessagesAtBottom = self.placeMessagesFromBottom && self.allContentFits
+        let needToPlaceMessagesAtBottom = placeMessagesFromBottom && allContentFits
         if needToPlaceMessagesAtBottom {
             let realContentHeight = contentSize.height + newInsetTop + newInsetBottom
             newInsetTop += collectionView.bounds.height - realContentHeight
         }
 
         let insetTopDiff = newInsetTop - collectionView.contentInset.top
-        let needToUpdateContentInset = self.placeMessagesFromBottom && (insetTopDiff != 0 || insetBottomDiff != 0)
+        let needToUpdateContentInset = placeMessagesFromBottom && (insetTopDiff != 0 || insetBottomDiff != 0)
 
         let prevContentOffsetY = collectionView.contentOffset.y
 
         let boundsHeightDiff: CGFloat = {
-            guard shouldUpdateContentOffset, let lastUsedBounds = self.previousBoundsUsedForInsetsAdjustment else {
-                return 0
-            }
+            guard shouldUpdateContentOffset, let lastUsedBounds = previousBoundsUsedForInsetsAdjustment else { return 0 }
             let diff = lastUsedBounds.height - collectionView.bounds.height
             // When collectionView is scrolled to bottom and height increases,
             // collectionView adjusts its contentOffset automatically
             let isScrolledToBottom = contentSize.height <= collectionView.bounds.maxY - collectionView.contentInset.bottom
-            return isScrolledToBottom ? max(0, diff) : diff
+            return isScrolledToBottom ? max(.zero, diff) : diff
         }()
-        self.previousBoundsUsedForInsetsAdjustment = collectionView.bounds
+        previousBoundsUsedForInsetsAdjustment = collectionView.bounds
 
         let newContentOffsetY: CGFloat = {
             let minOffset = -newInsetTop
@@ -410,17 +459,17 @@ open class BaseChatViewController: UIViewController,
 
         collectionView.chatto_setVerticalScrollIndicatorInsets({
             var currentInsets = collectionView.scrollIndicatorInsets
-            currentInsets.bottom = self.layoutConfiguration.scrollIndicatorInsets.bottom + inputHeightWithKeyboard
-            currentInsets.top = self.topLayoutGuide.length + self.layoutConfiguration.scrollIndicatorInsets.top
+            currentInsets.bottom = layoutConfiguration.scrollIndicatorInsets.bottom + inputHeightWithKeyboard
+            currentInsets.top = topLayoutGuide.length + layoutConfiguration.scrollIndicatorInsets.top
             return currentInsets
         }())
 
         guard shouldUpdateContentOffset else { return }
 
-        let inputIsAtBottom = self.view.bounds.maxY - self.inputBarContainer.frame.maxY <= 0
+        let inputIsAtBottom = view.bounds.maxY - inputBarContainer.frame.maxY <= .zero
         if isInteracting && (needToPlaceMessagesAtBottom || needToUpdateContentInset) {
             collectionView.contentOffset.y = prevContentOffsetY
-        } else if self.allContentFits {
+        } else if allContentFits {
             collectionView.contentOffset.y = -collectionView.contentInset.top
         } else if !isInteracting || inputIsAtBottom {
             collectionView.contentOffset.y = newContentOffsetY
@@ -534,11 +583,11 @@ open class BaseChatViewController: UIViewController,
         return self.inputContainerBottomConstraint.constant
     }
 
-    open func changeInputContentBottomMarginTo(_ newValue: CGFloat, animated: Bool = false, callback: (() -> Void)? = nil) {
-        self.changeInputContentBottomMarginTo(newValue, animated: animated, duration: CATransaction.animationDuration(), callback: callback)
+    open func changeInputContentBottomMargin(_ newValue: CGFloat, animated: Bool = false, callback: (() -> Void)? = nil) {
+        self.changeInputContentBottomMargin(newValue, animated: animated, duration: CATransaction.animationDuration(), callback: callback)
     }
 
-    open func changeInputContentBottomMarginTo(_ newValue: CGFloat, animated: Bool = false, duration: CFTimeInterval, initialSpringVelocity: CGFloat = 0.0, callback: (() -> Void)? = nil) {
+    open func changeInputContentBottomMargin(_ newValue: CGFloat, animated: Bool = false, duration: CFTimeInterval, initialSpringVelocity: CGFloat = 0.0, callback: (() -> Void)? = nil) {
         guard self.inputContainerBottomConstraint.constant != newValue else { callback?(); return }
         if animated {
             self.isAdjustingInputContainer = true
@@ -560,7 +609,7 @@ open class BaseChatViewController: UIViewController,
         }
     }
 
-    open func changeInputContentBottomMarginTo(_ newValue: CGFloat, animated: Bool = false, duration: CFTimeInterval, timingFunction: CAMediaTimingFunction, callback: (() -> Void)? = nil) {
+    open func changeInputContentBottomMargin(_ newValue: CGFloat, animated: Bool = false, duration: CFTimeInterval, timingFunction: CAMediaTimingFunction, callback: (() -> Void)? = nil) {
         guard self.inputContainerBottomConstraint.constant != newValue else { callback?(); return }
         if animated {
             self.isAdjustingInputContainer = true

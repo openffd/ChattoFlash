@@ -27,10 +27,7 @@ import Foundation
 public extension BaseChatViewController { // Cell Pan Gesture Handler
 
     final var cellPanGestureHandlerIsEnabled: Bool {
-        get {
-            return self.cellPanGestureHandler.isEnabled
-        } set {
-            self.cellPanGestureHandler.isEnabled = newValue
-        }
+        get { cellPanGestureHandler.isEnabled }
+        set { cellPanGestureHandler.isEnabled = newValue }
     }
 }

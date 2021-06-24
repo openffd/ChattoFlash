@@ -36,7 +36,7 @@ extension UIScrollView {
     func chatto_setContentInsetAdjustment(enabled: Bool, in viewController: UIViewController) {
         #if swift(>=3.2)
             if #available(iOS 11.0, *) {
-                self.contentInsetAdjustmentBehavior = enabled ? .always : .never
+                contentInsetAdjustmentBehavior = enabled ? .always : .never
             } else {
                 viewController.automaticallyAdjustsScrollViewInsets = enabled
             }
@@ -47,15 +47,15 @@ extension UIScrollView {
 
     func chatto_setAutomaticallyAdjustsScrollIndicatorInsets(_ adjusts: Bool) {
         if #available(iOS 13.0, *) {
-            self.automaticallyAdjustsScrollIndicatorInsets = adjusts
+            automaticallyAdjustsScrollIndicatorInsets = adjusts
         }
     }
 
     func chatto_setVerticalScrollIndicatorInsets(_ insets: UIEdgeInsets) {
         if #available(iOS 11.1, *) {
-            self.verticalScrollIndicatorInsets = insets
+            verticalScrollIndicatorInsets = insets
         } else {
-            self.scrollIndicatorInsets = insets
+            scrollIndicatorInsets = insets
         }
     }
 }
