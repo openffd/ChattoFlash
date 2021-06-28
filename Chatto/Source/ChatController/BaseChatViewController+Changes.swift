@@ -42,10 +42,10 @@ private struct HashableItem: Hashable {
 extension BaseChatViewController {
 
     public func enqueueModelUpdate(updateType: UpdateType, completion: (() -> Void)? = nil) {
-        let newItems = self.chatDataSource?.chatItems ?? []
+        let newItems = chatDataSource?.chatItems ?? []
 
-        if self.updatesConfig.coalesceUpdates {
-            self.updateQueue.flushQueue()
+        if updatesConfig.coalesceUpdates {
+            updateQueue.flushQueue()
         }
 
         self.updateQueue.addTask({ [weak self] (runNextTask) -> Void in
@@ -119,7 +119,7 @@ extension BaseChatViewController {
 
     private func visibleCellsFromCollectionViewApi() -> [IndexPath: UICollectionViewCell] {
         var visibleCells: [IndexPath: UICollectionViewCell] = [:]
-        guard let collectionView = self.collectionView else { return visibleCells }
+        guard let collectionView = collectionView else { return visibleCells }
         collectionView.indexPathsForVisibleItems.forEach({ (indexPath) in
             if let cell = collectionView.cellForItem(at: indexPath) {
                 visibleCells[indexPath] = cell
@@ -133,8 +133,8 @@ extension BaseChatViewController {
         // if self.updatesConfig.fastUpdates is enabled, very fast updates could result in `updateVisibleCells` updating wrong cells.
         // See more: https://github.com/diegosanchezr/UICollectionViewStressing
 
-        if self.updatesConfig.fastUpdates {
-            return updated(collection: self.visibleCells, withChanges: changes) == updated(collection: self.visibleCellsFromCollectionViewApi(), withChanges: changes)
+        if updatesConfig.fastUpdates {
+            return updated(collection: visibleCells, withChanges: changes) == updated(collection: visibleCellsFromCollectionViewApi(), withChanges: changes)
         } else {
             return true // never seen inconsistency without fastUpdates
         }
@@ -145,10 +145,12 @@ extension BaseChatViewController {
         case preservePosition(rectForReferenceIndexPathBeforeUpdate: CGRect?, referenceIndexPathAfterUpdate: IndexPath?)
     }
 
-    func performBatchUpdates(updateModelClosure: @escaping () -> Void, // swiftlint:disable:this cyclomatic_complexity
-                             changes: CollectionChanges,
-                             updateType: UpdateType,
-                             completion: @escaping () -> Void) {
+    func performBatchUpdates(
+        updateModelClosure: @escaping () -> Void, // swiftlint:disable:this cyclomatic_complexity
+        changes: CollectionChanges,
+        updateType: UpdateType,
+        completion: @escaping () -> Void
+    ) {
         guard let collectionView = self.collectionView else {
             completion()
             return

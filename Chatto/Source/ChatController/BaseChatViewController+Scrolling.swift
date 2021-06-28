@@ -121,10 +121,12 @@ extension BaseChatViewController {
         collectionView.contentOffset = CGPoint(x: .zero, y: collectionView.contentOffset.y + diffY)
     }
 
-    public func scrollToItem(withId itemId: String,
-                             position: UICollectionView.ScrollPosition = .centeredVertically,
-                             animated: Bool = false,
-                             spotlight: Bool = false) {
+    public func scrollToItem(
+        withId itemId: String,
+        position: UICollectionView.ScrollPosition = .centeredVertically,
+        animated: Bool = false,
+        spotlight: Bool = false
+    ) {
         guard let collectionView = self.collectionView else { return }
         guard let itemIndex = self.chatItemCompanionCollection.indexOf(itemId) else { return }
 
@@ -185,7 +187,7 @@ extension BaseChatViewController {
     }
 
     open func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        self.scrollViewEventsHandler?.onScrollViewDidEndDragging(scrollView, decelerate)
+        scrollViewEventsHandler?.onScrollViewDidEndDragging(scrollView, decelerate)
     }
 
     open func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {

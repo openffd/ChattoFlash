@@ -620,10 +620,9 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
             CATransaction.begin()
             CATransaction.setAnimationTimingFunction(timingFunction)
             inputContainerBottomAdditionalOffset = newValue
-            UIView.animate(
-                withDuration: duration,
-                animations: { self.view.layoutIfNeeded() }
-            )
+            UIView.animate(withDuration: duration) {
+                self.view.layoutIfNeeded()
+            }
             CATransaction.setCompletionBlock(callback) // this callback is guaranteed to be called
             CATransaction.commit()
             isAdjustingInputContainer = false

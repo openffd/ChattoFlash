@@ -50,7 +50,7 @@ public struct CellPanGestureHandlerConfig {
     public let accessoryViewTranslationMultiplier: CGFloat
     public let replyIndicatorTranslationMultiplier: CGFloat
     public var allowReplyRevealing: Bool = false
-    public var allowTimestampRevealing: Bool = true
+    public var allowTimestampRevealing: Bool = false
 
     public static func defaultConfig() -> CellPanGestureHandlerConfig {
         .init(

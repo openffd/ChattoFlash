@@ -73,27 +73,30 @@ public struct ChatCollectionViewLayoutModel {
 
 open class ChatCollectionViewLayout: UICollectionViewLayout {
     var layoutModel: ChatCollectionViewLayoutModel!
+    
     public weak var delegate: ChatCollectionViewLayoutDelegate?
 
     // Optimization: after reloadData we'll get invalidateLayout, but prepareLayout will be delayed until next run loop.
     // Client may need to force prepareLayout after reloadData, but we don't want to compute layout again in the next run loop.
     private var layoutNeedsUpdate = true
+    
     open override func invalidateLayout() {
         super.invalidateLayout()
-        self.layoutNeedsUpdate = true
+        layoutNeedsUpdate = true
     }
 
     open override func prepare() {
         super.prepare()
-        guard self.layoutNeedsUpdate else { return }
+        guard layoutNeedsUpdate else { return }
         guard let delegate = self.delegate else {
-            self.layoutModel = ChatCollectionViewLayoutModel.createEmptyModel()
+            layoutModel = ChatCollectionViewLayoutModel.createEmptyModel()
             return
         }
-        var oldLayoutModel = self.layoutModel
-        self.layoutModel = delegate.chatCollectionViewLayoutModel()
-        self.layoutNeedsUpdate = false
-        DispatchQueue.global(qos: .default).async { () -> Void in
+        
+        var oldLayoutModel = layoutModel
+        layoutModel = delegate.chatCollectionViewLayoutModel()
+        layoutNeedsUpdate = false
+        DispatchQueue.global(qos: .default).async {
             // Dealloc of layout with 5000 items take 25 ms on tests on iPhone 4s
             // This moves dealloc out of main thread
             if oldLayoutModel != nil {
@@ -104,31 +107,33 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
     }
 
     open override var collectionViewContentSize: CGSize {
-        return self.layoutModel?.contentSize ?? .zero
+        layoutModel?.contentSize ?? .zero
     }
 
     open override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var attributesArray = [UICollectionViewLayoutAttributes]()
-
+        
         // Find any cell that sits within the query rect.
-        guard let firstMatchIndex = self.layoutModel.layoutAttributes.binarySearch(predicate: { attribute in
+        guard let firstMatchIndex = layoutModel.layoutAttributes.binarySearch(predicate: { attribute in
             if attribute.frame.intersects(rect) {
                 return .orderedSame
-            }
-            if attribute.frame.minY > rect.maxY {
+            } else if attribute.frame.minY > rect.maxY {
                 return .orderedDescending
+            } else {
+                return .orderedAscending
             }
-            return .orderedAscending
-        }) else { return attributesArray }
+        }) else {
+            return attributesArray
+        }
 
         // Starting from the match, loop up and down through the array until all the attributes
         // have been added within the query rect.
-        for attributes in self.layoutModel.layoutAttributes[..<firstMatchIndex].reversed() {
+        for attributes in layoutModel.layoutAttributes[..<firstMatchIndex].reversed() {
             guard attributes.frame.maxY >= rect.minY else { break }
             attributesArray.append(attributes)
         }
 
-        for attributes in self.layoutModel.layoutAttributes[firstMatchIndex...] {
+        for attributes in layoutModel.layoutAttributes[firstMatchIndex...] {
             guard attributes.frame.minY <= rect.maxY else { break }
             attributesArray.append(attributes)
         }
@@ -137,11 +142,12 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
     }
 
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        if indexPath.section < self.layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
-            return self.layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
+        if indexPath.section < layoutModel.layoutAttributesBySectionAndItem.count && indexPath.item < layoutModel.layoutAttributesBySectionAndItem[indexPath.section].count {
+            return layoutModel.layoutAttributesBySectionAndItem[indexPath.section][indexPath.item]
+        } else {
+            assert(false, "Unexpected indexPath requested:\(indexPath)")
+            return nil
         }
-        assert(false, "Unexpected indexPath requested:\(indexPath)")
-        return nil
     }
 
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
@@ -150,7 +156,6 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
 }
 
 private extension Array {
-
     func binarySearch(predicate: (Element) -> ComparisonResult) -> Index? {
         var lowerBound = startIndex
         var upperBound = endIndex
