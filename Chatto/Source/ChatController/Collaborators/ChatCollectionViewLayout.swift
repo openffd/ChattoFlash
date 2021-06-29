@@ -151,7 +151,7 @@ open class ChatCollectionViewLayout: UICollectionViewLayout {
     }
 
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        return self.layoutModel.calculatedForWidth != newBounds.width
+        return layoutModel.calculatedForWidth != newBounds.width
     }
 }
 

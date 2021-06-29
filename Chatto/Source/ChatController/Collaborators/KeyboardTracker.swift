@@ -35,10 +35,13 @@ public typealias KeyboardHeightBlock = (_ height: CGFloat, _ status: KeyboardSta
 
 class KeyboardTracker {
     private(set) var keyboardStatus: KeyboardStatus = .hidden
+    
     private let view: UIView
+    
     var trackingView: UIView {
         return self.keyboardTrackerView
     }
+    
     private lazy var keyboardTrackerView: KeyboardTrackingView = {
         let trackingView = KeyboardTrackingView()
         trackingView.positionChangedCallback = { [weak self] in
@@ -52,8 +55,8 @@ class KeyboardTracker {
 
     var isTracking = false
     var inputBarContainer: UIView
+    
     private var notificationCenter: NotificationCenter
-
     private var heightBlock: KeyboardHeightBlock
 
     init(viewController: UIViewController, inputBarContainer: UIView, heightBlock: @escaping KeyboardHeightBlock, notificationCenter: NotificationCenter) {
@@ -105,8 +108,7 @@ class KeyboardTracker {
         self.isTracking = false
     }
 
-    @objc
-    private func keyboardWillShow(_ notification: Notification) {
+    @objc private func keyboardWillShow(_ notification: Notification) {
         guard self.isTracking else { return }
         guard !self.isPerformingForcedLayout else { return }
         let bottomConstraint = self.bottomConstraintFromNotification(notification)
@@ -115,8 +117,7 @@ class KeyboardTracker {
         self.layoutInputContainer(withBottomConstraint: bottomConstraint)
     }
 
-    @objc
-    private func keyboardDidShow(_ notification: Notification) {
+    @objc private func keyboardDidShow(_ notification: Notification) {
         guard self.isTracking else { return }
         guard !self.isPerformingForcedLayout else { return }
 
@@ -127,8 +128,7 @@ class KeyboardTracker {
         self.adjustTrackingViewSizeIfNeeded()
     }
 
-    @objc
-    private func keyboardWillChangeFrame(_ notification: Notification) {
+    @objc private func keyboardWillChangeFrame(_ notification: Notification) {
         guard self.isTracking else { return }
         let bottomConstraint = self.bottomConstraintFromNotification(notification)
         if bottomConstraint == 0 {
@@ -137,15 +137,13 @@ class KeyboardTracker {
         }
     }
 
-    @objc
-    private func keyboardWillHide(_ notification: Notification) {
+    @objc private func keyboardWillHide(_ notification: Notification) {
         guard self.isTracking else { return }
         self.keyboardStatus = .hiding
         self.layoutInputAtBottom()
     }
 
-    @objc
-    private func keyboardDidHide(_ notification: Notification) {
+    @objc private func keyboardDidHide(_ notification: Notification) {
         guard self.isTracking else { return }
         self.keyboardStatus = .hidden
         self.layoutInputAtBottom()

@@ -250,7 +250,8 @@ extension ChatInputBar {
         sendButton.tintColor = .white
         sendButton.imageView?.contentMode = .scaleAspectFit
         if #available(iOS 13.0, *) {
-            sendButton.setImage(UIImage(systemName: "arrowtriangle.right.fill"), for: .normal)
+            let image = UIImage(systemName: "paperplane.fill")?.rotate(radians: .pi * 0.25)
+            sendButton.setImage(image, for: .normal)
         } else {
             // Fallback on earlier versions
         }
@@ -266,6 +267,28 @@ extension ChatInputBar {
         sendButton.layer.borderColor = appearance.sendButtonAppearance.borderColor.cgColor
         
         tabBarContainerHeightConstraint.constant = appearance.tabBarAppearance.height
+    }
+}
+
+extension UIImage {
+    func rotate(radians: Float) -> UIImage? {
+        var newSize = CGRect(origin: CGPoint.zero, size: size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
+        // Trim off the extremely small float value to prevent core graphics from rounding it up
+        newSize.width = floor(newSize.width)
+        newSize.height = floor(newSize.height)
+
+        UIGraphicsBeginImageContextWithOptions(newSize, false, scale)
+        let context = UIGraphicsGetCurrentContext()!
+        // Move origin to middle
+        context.translateBy(x: newSize.width / 2 - 2.5, y: newSize.height / 2)
+        // Rotate around middle
+        context.rotate(by: CGFloat(radians))
+        // Draw the image at its center
+        draw(in: CGRect(x: -size.width / 2, y: -size.height / 2, width: size.width, height: size.height))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()?.withRenderingMode(.alwaysTemplate)
+        UIGraphicsEndImageContext()
+
+        return newImage
     }
 }
 

@@ -201,7 +201,7 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
 
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        keyboardTracker?.stopTracking()
+//        keyboardTracker?.stopTracking()
     }
 
     private func addCollectionView() {
