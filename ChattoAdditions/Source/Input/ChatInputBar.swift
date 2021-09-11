@@ -55,18 +55,24 @@ public protocol ChatInputBarDelegate: AnyObject {
         textView
     }
 
-    @IBOutlet weak var scrollView: HorizontalStackScrollView!
-    @IBOutlet weak var textView: ExpandableTextView!
-    @IBOutlet weak var sendButton: UIButton!
-    @IBOutlet weak var topBorderHeightConstraint: NSLayoutConstraint!
-
-//    @IBOutlet var constraintsForHiddenTextView: [NSLayoutConstraint]!
-//    @IBOutlet var constraintsForVisibleTextView: [NSLayoutConstraint]!
-//
-//    @IBOutlet var constraintsForVisibleSendButton: [NSLayoutConstraint]!
-//    @IBOutlet var constraintsForHiddenSendButton: [NSLayoutConstraint]!
+    @IBOutlet var scrollView: HorizontalStackScrollView!
+    @IBOutlet var textView: ExpandableTextView!
+    @IBOutlet var sendButton: UIButton!
+    @IBOutlet var topBarView: UIView!
+    @IBOutlet var topBarViewHeightLayoutConstraint: NSLayoutConstraint!
     @IBOutlet var tabBarContainerHeightConstraint: NSLayoutConstraint!
 
+    public func addSubviewToTopBarView(_ subview: UIView) {
+        subview.translatesAutoresizingMaskIntoConstraints = false
+        topBarView.addSubview(subview)
+        NSLayoutConstraint.activate([
+            subview.leadingAnchor.constraint(equalTo: topBarView.leadingAnchor),
+            subview.topAnchor.constraint(equalTo: topBarView.topAnchor),
+            subview.trailingAnchor.constraint(equalTo: topBarView.trailingAnchor),
+            subview.bottomAnchor.constraint(equalTo: topBarView.bottomAnchor)
+        ])
+    }
+    
     class open func loadNib() -> ChatInputBar {
         let view = Bundle.resources.loadNibNamed(nibName(), owner: nil, options: nil)!.first as! ChatInputBar
         view.frame = .zero
@@ -80,7 +86,7 @@ public protocol ChatInputBarDelegate: AnyObject {
 
     open override func awakeFromNib() {
         super.awakeFromNib()
-        topBorderHeightConstraint.constant = 1 / UIScreen.main.scale
+        topBarViewHeightLayoutConstraint.constant = 20 // 1 / UIScreen.main.scale
         textView.scrollsToTop = false
         textView.delegate = self
         textView.placeholderDelegate = self
