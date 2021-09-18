@@ -14,14 +14,14 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b1n-fp-7di" userLabel="TopBarView">
-                    <rect key="frame" x="6" y="0.0" width="588" height="20"/>
+                    <rect key="frame" x="6" y="0.0" width="588" height="28"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="20" identifier="top-border-height" id="IIv-qg-Tlp"/>
+                        <constraint firstAttribute="height" constant="28" identifier="top-border-height" id="IIv-qg-Tlp"/>
                     </constraints>
                 </view>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="249" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="fsh-hH-hKG" userLabel="TextView" customClass="ExpandableTextView" customModule="ChattoAdditions">
-                    <rect key="frame" x="6" y="27.5" width="539" height="73.5"/>
+                    <rect key="frame" x="6" y="32" width="539" height="69"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -76,7 +76,7 @@
             <constraints>
                 <constraint firstItem="fsh-hH-hKG" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="6" id="0hb-TC-77u"/>
                 <constraint firstItem="hkz-tq-X6j" firstAttribute="top" secondItem="fsh-hH-hKG" secondAttribute="bottom" constant="8" id="4Vl-vV-gaa"/>
-                <constraint firstItem="fsh-hH-hKG" firstAttribute="top" secondItem="b1n-fp-7di" secondAttribute="bottom" constant="7.5" id="68s-NM-Z8M"/>
+                <constraint firstItem="fsh-hH-hKG" firstAttribute="top" secondItem="b1n-fp-7di" secondAttribute="bottom" constant="4" id="68s-NM-Z8M"/>
                 <constraint firstAttribute="bottom" secondItem="hkz-tq-X6j" secondAttribute="bottom" id="HFl-3K-Xpk"/>
                 <constraint firstItem="hE9-hU-Ci1" firstAttribute="leading" secondItem="fsh-hH-hKG" secondAttribute="trailing" constant="4" id="U2K-2o-aRt"/>
                 <constraint firstAttribute="trailing" secondItem="hkz-tq-X6j" secondAttribute="trailing" id="V4u-Kv-Ub2"/>

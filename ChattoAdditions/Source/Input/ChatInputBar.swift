@@ -86,7 +86,7 @@ public protocol ChatInputBarDelegate: AnyObject {
 
     open override func awakeFromNib() {
         super.awakeFromNib()
-        topBarViewHeightLayoutConstraint.constant = 20 // 1 / UIScreen.main.scale
+        topBarViewHeightLayoutConstraint.constant = 28
         textView.scrollsToTop = false
         textView.delegate = self
         textView.placeholderDelegate = self
@@ -232,6 +232,10 @@ extension ChatInputBar: ChatInputItemViewDelegate {
 
 extension ChatInputBar {
     public func setAppearance(_ appearance: ChatInputBarAppearance) {
+        topBarView.backgroundColor = appearance.textInputAppearance.backgroundColor
+        topBarView.layer.borderColor = appearance.textInputAppearance.borderColor.cgColor
+        topBarView.layer.borderWidth = appearance.sendButtonAppearance.borderWidth
+        
         textView.font = appearance.textInputAppearance.font
         textView.textColor = appearance.textInputAppearance.textColor
         textView.tintColor = appearance.textInputAppearance.tintColor
