@@ -86,7 +86,7 @@ public protocol ChatInputBarDelegate: AnyObject {
 
     open override func awakeFromNib() {
         super.awakeFromNib()
-        topBarViewHeightLayoutConstraint.constant = 28
+        topBarViewHeightLayoutConstraint.constant = 32
         textView.scrollsToTop = false
         textView.delegate = self
         textView.placeholderDelegate = self
@@ -198,6 +198,10 @@ public protocol ChatInputBarDelegate: AnyObject {
     }
 
     @IBAction func buttonTapped(_ sender: AnyObject) {
+        if #available(iOS 10.0, *) {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
+        
         presenter?.onSendButtonPressed()
         delegate?.inputBarSendButtonPressed(self)
     }
