@@ -199,7 +199,9 @@ public protocol ChatInputBarDelegate: AnyObject {
 
     @IBAction func buttonTapped(_ sender: AnyObject) {
         if #available(iOS 10.0, *) {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            impactFeedbackGenerator.prepare()
+            impactFeedbackGenerator.impactOccurred()
         }
         
         presenter?.onSendButtonPressed()
