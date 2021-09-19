@@ -34,6 +34,7 @@ public enum MessageStatus {
 public protocol MessageModelProtocol: ChatItemProtocol {
     var senderId: String { get }
     var isIncoming: Bool { get }
+    var isDirectMessage: Bool { get }
     var date: Date { get }
     var status: MessageStatus { get }
     var canReply: Bool { get }
@@ -63,6 +64,10 @@ public extension DecoratedMessageModelProtocol {
     var isIncoming: Bool {
         return self.messageModel.isIncoming
     }
+    
+    var isDirectMessage: Bool {
+        return self.messageModel.isDirectMessage
+    }
 
     var date: Date {
         return self.messageModel.date
@@ -78,6 +83,7 @@ open class MessageModel: MessageModelProtocol {
     open var senderId: String
     open var type: String
     open var isIncoming: Bool
+    open var isDirectMessage: Bool
     open var date: Date
     open var status: MessageStatus
     open var canReply: Bool
@@ -86,6 +92,7 @@ open class MessageModel: MessageModelProtocol {
                 senderId: String,
                 type: String,
                 isIncoming: Bool,
+                isDirectMessage: Bool,
                 date: Date,
                 status: MessageStatus,
                 canReply: Bool = false) {
@@ -93,6 +100,7 @@ open class MessageModel: MessageModelProtocol {
         self.senderId = senderId
         self.type = type
         self.isIncoming = isIncoming
+        self.isDirectMessage = isDirectMessage
         self.date = date
         self.status = status
         self.canReply = canReply
