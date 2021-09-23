@@ -53,11 +53,18 @@ open class TextMessagePresenter<ViewModelBuilderT, InteractionHandlerT>
             sizingCell: sizingCell,
             cellStyle: baseCellStyle
         )
+        
+//        NotificationCenter.default.addObserver(self, selector: #selector(updatePinch(_:)), name: NSNotification.Name("Pinch"), object: nil)
     }
 
+    // TODO: ZOOM FEATURE
+    @objc private func updatePinch(_ notification: Notification) {
+        self.textCellStyle = TextMessageCollectionViewCellDefaultStyle(textStyle: TextMessageCollectionViewCellDefaultStyle.createDefaultTextStyle(fontSize: 20))
+    }
+    
     private let menuPresenter: TextMessageMenuItemPresenterProtocol?
     let layoutCache: NSCache<AnyObject, AnyObject>
-    let textCellStyle: TextMessageCollectionViewCellStyleProtocol
+    var textCellStyle: TextMessageCollectionViewCellStyleProtocol
 
     public final override class func registerCells(_ collectionView: UICollectionView) {
         collectionView.register(TextMessageCollectionViewCell.self, forCellWithReuseIdentifier: "text-message-incoming")

@@ -83,6 +83,13 @@ public final class TextBubbleView: UIView, MaximumLayoutWidthSpecificable, Backg
     private func commonInit() {
         self.addSubview(self.bubbleImageView)
         self.addSubview(self.textView)
+        
+//        NotificationCenter.default.addObserver(self, selector: #selector(updatePinch(_:)), name: NSNotification.Name("Pinch"), object: nil)
+    }
+    
+    // TODO: ZOOM FEATURE
+    @objc private func updatePinch(_ notification: Notification) {
+        self.style = TextMessageCollectionViewCellDefaultStyle(textStyle: TextMessageCollectionViewCellDefaultStyle.createDefaultTextStyle(fontSize: 20))
     }
 
     private lazy var bubbleImageView: UIImageView = {

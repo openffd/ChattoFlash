@@ -252,8 +252,21 @@ open class BaseChatViewController: UIViewController, UICollectionViewDataSource,
         if !customPresentersConfigurationPoint {
             confugureCollectionViewWithPresenters()
         }
+        
+//        let pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(didReceivePinch(gesture:)))
+//        view.addGestureRecognizer(pinchGestureRecognizer)
     }
 
+    // TODO: ZOOM FEATURE
+    @objc private func didReceivePinch(gesture: UIPinchGestureRecognizer) {
+        print("Pinch Scale: ", gesture.scale)
+        
+        let notification = Notification(name: Notification.Name("Pinch"), object: self, userInfo: ["scale": gesture.scale])
+        NotificationCenter.default.post(notification)
+        
+        collectionView?.collectionViewLayout.invalidateLayout()
+    }
+    
     var unfinishedBatchUpdatesCount: Int = 0
     var onAllBatchUpdatesFinished: (() -> Void)?
 
