@@ -86,7 +86,7 @@ public protocol ChatInputBarDelegate: AnyObject {
 
     open override func awakeFromNib() {
         super.awakeFromNib()
-        topBarViewHeightLayoutConstraint.constant = 32
+        topBarViewHeightLayoutConstraint.constant = 26
         textView.scrollsToTop = false
         textView.delegate = self
         textView.placeholderDelegate = self
