@@ -41,7 +41,7 @@ public struct ChatLayoutConfiguration: ChatLayoutConfigurationProtocol {
 
 extension ChatLayoutConfiguration {
     static var defaultConfiguration: ChatLayoutConfiguration {
-        let contentInsets = UIEdgeInsets(top: 10, left: .zero, bottom: 10, right: .zero)
+        let contentInsets = UIEdgeInsets(top: 4, left: .zero, bottom: 4, right: .zero)
         return ChatLayoutConfiguration(contentInsets: contentInsets, scrollIndicatorInsets: UIEdgeInsets.zero)
     }
 }
