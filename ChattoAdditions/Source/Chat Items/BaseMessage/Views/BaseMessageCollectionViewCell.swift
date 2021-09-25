@@ -617,7 +617,7 @@ private struct Layout {
                 self.failedButtonFrame.origin.x = currentX - failedButtonSize.width
                 currentX += horizontalInterspacing
             }
-            self.bubbleViewFrame.origin.x = currentX
+            self.bubbleViewFrame.origin.x = currentX - 6 // TODO!
         } else {
             currentX = containerRect.maxX - horizontalMargin
             currentX -= avatarSize.width
@@ -632,7 +632,7 @@ private struct Layout {
                 currentX -= horizontalInterspacing
             }
             currentX -= bubbleSize.width
-            self.bubbleViewFrame.origin.x = currentX
+            self.bubbleViewFrame.origin.x = currentX + 6 // TODO!
         }
 
         self.size = containerRect.size
