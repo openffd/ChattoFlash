@@ -21,17 +21,17 @@
                     </constraints>
                 </view>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" verticalHuggingPriority="249" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="fsh-hH-hKG" userLabel="TextView" customClass="ExpandableTextView" customModule="ChattoAdditions">
-                    <rect key="frame" x="4" y="32" width="545" height="73"/>
+                    <rect key="frame" x="4" y="31" width="547" height="75"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hE9-hU-Ci1">
-                    <rect key="frame" x="553" y="62" width="43" height="43"/>
+                    <rect key="frame" x="554" y="64" width="42" height="42"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="43" id="Ro4-xR-xlC"/>
+                        <constraint firstAttribute="width" constant="42" id="Ro4-xR-xlC"/>
                         <constraint firstAttribute="width" secondItem="hE9-hU-Ci1" secondAttribute="height" multiplier="1:1" id="TJJ-zW-wOD"/>
                     </constraints>
                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -75,16 +75,16 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="fsh-hH-hKG" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="0hb-TC-77u"/>
-                <constraint firstItem="hkz-tq-X6j" firstAttribute="top" secondItem="fsh-hH-hKG" secondAttribute="bottom" constant="4" id="4Vl-vV-gaa"/>
-                <constraint firstItem="fsh-hH-hKG" firstAttribute="top" secondItem="b1n-fp-7di" secondAttribute="bottom" constant="4" id="68s-NM-Z8M"/>
+                <constraint firstItem="hkz-tq-X6j" firstAttribute="top" secondItem="fsh-hH-hKG" secondAttribute="bottom" constant="3" id="4Vl-vV-gaa"/>
+                <constraint firstItem="fsh-hH-hKG" firstAttribute="top" secondItem="b1n-fp-7di" secondAttribute="bottom" constant="3" id="68s-NM-Z8M"/>
                 <constraint firstAttribute="bottom" secondItem="hkz-tq-X6j" secondAttribute="bottom" id="HFl-3K-Xpk"/>
-                <constraint firstItem="hE9-hU-Ci1" firstAttribute="leading" secondItem="fsh-hH-hKG" secondAttribute="trailing" constant="4" id="U2K-2o-aRt"/>
+                <constraint firstItem="hE9-hU-Ci1" firstAttribute="leading" secondItem="fsh-hH-hKG" secondAttribute="trailing" constant="3" id="U2K-2o-aRt"/>
                 <constraint firstAttribute="trailing" secondItem="hkz-tq-X6j" secondAttribute="trailing" id="V4u-Kv-Ub2"/>
                 <constraint firstItem="hkz-tq-X6j" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="eGb-Fb-2Of"/>
                 <constraint firstItem="hkz-tq-X6j" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="gpt-vU-KzZ"/>
                 <constraint firstAttribute="trailing" secondItem="b1n-fp-7di" secondAttribute="trailing" constant="4" id="lmb-AV-eyD"/>
                 <constraint firstItem="b1n-fp-7di" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="mci-2b-Z7f"/>
-                <constraint firstItem="hkz-tq-X6j" firstAttribute="top" secondItem="hE9-hU-Ci1" secondAttribute="bottom" constant="4" id="s34-q3-HjX"/>
+                <constraint firstItem="hkz-tq-X6j" firstAttribute="top" secondItem="hE9-hU-Ci1" secondAttribute="bottom" constant="3" id="s34-q3-HjX"/>
                 <constraint firstItem="b1n-fp-7di" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="sKU-B2-FjZ"/>
                 <constraint firstAttribute="trailing" secondItem="hE9-hU-Ci1" secondAttribute="trailing" constant="4" id="wDo-yO-0dK"/>
             </constraints>
