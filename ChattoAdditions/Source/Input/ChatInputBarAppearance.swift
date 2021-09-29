@@ -48,7 +48,7 @@ public struct ChatInputBarAppearance {
 
     public struct TextInputAppearance {
         public var backgroundColor = UIColor.clear
-        public var font = UIFont(name: "Montserrat-Regular", size: 12)! //UIFont.systemFont(ofSize: 12)
+        public var font = UIFont(name: "Montserrat-Regular", size: 12)!
         public var textColor = UIColor.white
         public var tintColor: UIColor?
         public var borderColor = UIColor.clear
