@@ -73,6 +73,10 @@ public protocol ChatInputBarDelegate: AnyObject {
         ])
     }
     
+    public func hideTopBarView() {
+        topBarView.isHidden = true
+    }
+    
     class open func loadNib() -> ChatInputBar {
         let view = Bundle.resources.loadNibNamed(nibName(), owner: nil, options: nil)!.first as! ChatInputBar
         view.frame = .zero
