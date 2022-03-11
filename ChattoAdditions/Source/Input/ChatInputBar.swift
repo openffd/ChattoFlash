@@ -75,6 +75,8 @@ public protocol ChatInputBarDelegate: AnyObject {
     
     public func hideTopBarView() {
         topBarView.isHidden = true
+        topBarViewHeightLayoutConstraint.constant = 2
+        self.layoutIfNeeded()
     }
     
     class open func loadNib() -> ChatInputBar {
